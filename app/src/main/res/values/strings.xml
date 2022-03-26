@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">FitnessTracker</string>
+    <string name="google_maps_key">AIzaSyB_B5bMQa_-5fgiiLoq2pfcLvrF6NwRXhY</string>
 </resources>
