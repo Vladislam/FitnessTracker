@@ -1,4 +1,21 @@
 <resources>
     <string name="app_name">FitnessTracker</string>
     <string name="google_maps_key">AIzaSyB_B5bMQa_-5fgiiLoq2pfcLvrF6NwRXhY</string>
+    <string name="add_new_run">Add a new run</string>
+    <string name="apply_changes">Apply Changes</string>
+    <string name="your_weight">Your Weight</string>
+    <string name="your_name">Your Name</string>
+    <string name="continue_on">Continue</string>
+    <string name="welcome_please_enter_your_name_and_weight">Welcome!\nPlease enter your name and weight</string>
+    <string name="start">Start</string>
+    <string name="run_image">Run Image</string>
+    <string name="date">Date</string>
+    <string name="distance">Distance</string>
+    <string name="duration">Duration</string>
+    <string name="speed">Speed</string>
+    <string name="calories">Calories</string>
+    <string name="total_time">Total Time</string>
+    <string name="average_speed">Average Speed</string>
+    <string name="total_calories_burned">Total Calories Burned</string>
+    <string name="total_distance">Total Distance</string>
 </resources>

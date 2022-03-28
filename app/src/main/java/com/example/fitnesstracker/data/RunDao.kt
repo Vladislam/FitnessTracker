@@ -8,9 +8,7 @@ import com.example.fitnesstracker.util.extensions.asLiveData
 import io.realm.Realm
 import io.realm.Sort
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class RunDao @Inject constructor(
     private val realm: Realm,
 ) {
