@@ -1,6 +1,7 @@
 package com.example.fitnesstracker.ui
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -31,11 +32,22 @@ class MainActivity : AppCompatActivity() {
                 (supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment).navController
 
             val appBarConfiguration = AppBarConfiguration.Builder(
-
+                R.id.runFragment,
+                R.id.statisticsFragment,
+                R.id.settingsFragment,
+                R.id.setupFragment
             ).build()
 
             setupActionBarWithNavController(navController, appBarConfiguration)
             bottomNavigationView.setupWithNavController(navController)
+
+            navController.addOnDestinationChangedListener { _, destination, _ ->
+                when (destination.id) {
+                    R.id.settingsFragment, R.id.runFragment, R.id.statisticsFragment -> bottomNavigationView.visibility =
+                        View.VISIBLE
+                    else -> bottomNavigationView.visibility = View.GONE
+                }
+            }
         }
     }
 

@@ -12,14 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:defaultNavHost="true"
-        android:layout_marginBottom="56dp"
-        app:navGraph="@null" />
+        app:layout_behavior=".ui.custom.behavior.CustomBehavior"
+        app:navGraph="@navigation/main_nav_graph" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_gravity="bottom"
-        app:menu="@null" />
+        style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"
+        app:menu="@menu/menu_bottom_nav" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -53,7 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="36dp"
         android:layout_marginEnd="36dp"
-        app:layout_constraintBottom_toTopOf="@id/btnApplyChanges"
+        app:layout_constraintBottom_toTopOf="@id/btnContinue"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tilName">
@@ -68,7 +68,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/btnApplyChanges"
+        android:id="@+id/btnContinue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
