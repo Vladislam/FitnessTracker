@@ -3,6 +3,9 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
+    id 'kotlin-parcelize'
+    id 'realm-android'
+    id 'androidx.navigation.safeargs.kotlin'
 }
 
 android {
@@ -20,7 +23,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -89,7 +93,8 @@ dependencies {
     implementation 'pub.devrel:easypermissions:3.0.0'
 
     // Timber
-    implementation 'com.jakewharton.timber:timber:4.7.1'
+    //noinspection GradleDependency
+    implementation 'com.jakewharton.timber:timber:4.5.1'
 
     // MPAndroidChart
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
