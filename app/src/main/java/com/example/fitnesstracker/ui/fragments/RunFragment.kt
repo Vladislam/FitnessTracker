@@ -2,12 +2,22 @@ package com.example.fitnesstracker.ui.fragments
 
 import android.os.Bundle
 import android.view.*
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.fitnesstracker.R
+import com.example.fitnesstracker.data.models.SortMethod
 import com.example.fitnesstracker.databinding.FragmentRunBinding
 import com.example.fitnesstracker.ui.fragments.base.BaseFragment
+import com.example.fitnesstracker.ui.viewmodels.RunViewModel
+import com.example.fitnesstracker.util.extensions.throttleFirst
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import ru.ldralighieri.corbind.view.clicks
 
 @AndroidEntryPoint
 class RunFragment : BaseFragment(R.layout.fragment_run) {
@@ -15,51 +25,65 @@ class RunFragment : BaseFragment(R.layout.fragment_run) {
     private var _binding: FragmentRunBinding? = null
     private val binding get() = _binding!!
 
+    private val viewModel: RunViewModel by viewModels()
+
     override fun setup(savedInstanceState: Bundle?) {
         setupFab()
     }
 
     private fun setupFab() {
         binding.apply {
-            fab.setOnClickListener {
-                findNavController().navigate(RunFragmentDirections.actionRunFragmentToTrackingFragment())
-            }
+            fab.clicks()
+                .throttleFirst()
+                .onEach {
+                    findNavController().navigate(RunFragmentDirections.actionRunFragmentToTrackingFragment())
+                }
+                .launchIn(lifecycleScope)
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_fragment_run, menu)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.preferencesFlow
+                .map { it.sort }
+                .collectLatest { sortMethod ->
+                    when (sortMethod.ordinal) {
+                        0 -> menu.findItem(R.id.action_sort_by_date).isChecked = true
+                        1 -> menu.findItem(R.id.action_sort_by_duration).isChecked = true
+                        2 -> menu.findItem(R.id.action_sort_by_distance).isChecked = true
+                        3 -> menu.findItem(R.id.action_sort_by_avg_speed).isChecked = true
+                        4 -> menu.findItem(R.id.action_sort_by_calories_burned).isChecked = true
+                        else -> {}
+                    }
+                }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_delete_all_completed_tasks -> {
-                Timber.d("Delete all completed tasks")
                 true
             }
             R.id.action_sort_by_avg_speed -> {
-                Timber.d("by speed")
-                item.isChecked = !item.isChecked
+                viewModel.onSortChangeClick(SortMethod.BY_SPEED)
                 true
             }
             R.id.action_sort_by_calories_burned -> {
-                Timber.d("by calories")
-                item.isChecked = !item.isChecked
+                viewModel.onSortChangeClick(SortMethod.BY_CALORIES)
                 true
             }
             R.id.action_sort_by_date -> {
-                Timber.d("by date")
-                item.isChecked = !item.isChecked
+                viewModel.onSortChangeClick(SortMethod.BY_DATE)
                 true
             }
             R.id.action_sort_by_distance -> {
-                Timber.d("by distance")
-                item.isChecked = !item.isChecked
+                viewModel.onSortChangeClick(SortMethod.BY_DISTANCE)
                 true
             }
             R.id.action_sort_by_duration -> {
-                Timber.d("by duration")
-                item.isChecked = !item.isChecked
+                viewModel.onSortChangeClick(SortMethod.BY_DURATION)
                 true
             }
             else -> super.onOptionsItemSelected(item)
