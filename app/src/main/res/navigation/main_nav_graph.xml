@@ -9,7 +9,7 @@
         android:id="@+id/runFragment"
         android:name="com.example.fitnesstracker.ui.fragments.RunFragment"
         android:label="@string/your_runs"
-        tools:layout="@layout/fragment_run" >
+        tools:layout="@layout/fragment_run">
         <action
             android:id="@+id/action_runFragment_to_trackingFragment"
             app:destination="@id/trackingFragment" />
@@ -23,7 +23,7 @@
         android:id="@+id/setupFragment"
         android:name="com.example.fitnesstracker.ui.fragments.SetupFragment"
         android:label="@string/setting_up"
-        tools:layout="@layout/fragment_setup" >
+        tools:layout="@layout/fragment_setup">
         <action
             android:id="@+id/action_setupFragment_to_runFragment"
             app:destination="@id/runFragment"
@@ -39,9 +39,13 @@
         android:id="@+id/trackingFragment"
         android:name="com.example.fitnesstracker.ui.fragments.TrackingFragment"
         android:label="@string/tracking_your_run"
-        tools:layout="@layout/fragment_tracking" >
+        tools:layout="@layout/fragment_tracking">
         <action
             android:id="@+id/action_trackingFragment_to_runFragment"
             app:destination="@id/runFragment" />
     </fragment>
+    <action
+        android:id="@+id/action_global_trackingFragment"
+        app:destination="@id/trackingFragment"
+        app:launchSingleTop="true" />
 </navigation>
