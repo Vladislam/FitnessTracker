@@ -8,7 +8,7 @@
     tools:context=".ui.fragments.TrackingFragment">
 
     <com.google.android.gms.maps.MapView
-        android:id="@+id/mavView"
+        android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
