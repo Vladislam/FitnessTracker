@@ -19,3 +19,11 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-keep class androidx.core.app.NotificationCompat { *; }
+-keep class androidx.core.app.NotificationCompat$* { *; }
+-keep class com.example.fitnesstracker.data.models.TrackingUIState
+-keep class com.example.fitnesstracker.data.models.RunEntity
+-keep class com.example.fitnesstracker.data.models.Error
+-keep class com.example.fitnesstracker.data.models.ServiceState
+-keep class com.example.fitnesstracker.data.models.SortMethod
+-keep class com.example.fitnesstracker.data.models.UserPreferences

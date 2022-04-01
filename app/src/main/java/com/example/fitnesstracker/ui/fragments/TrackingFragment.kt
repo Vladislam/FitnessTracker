@@ -6,14 +6,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.fitnesstracker.R
 import com.example.fitnesstracker.databinding.FragmentTrackingBinding
 import com.example.fitnesstracker.services.TrackingService
 import com.example.fitnesstracker.ui.fragments.base.BaseFragment
 import com.example.fitnesstracker.ui.viewmodels.TrackingViewModel
 import com.example.fitnesstracker.util.Polyline
+import com.example.fitnesstracker.util.TrackingUtility
 import com.example.fitnesstracker.util.const.Constants.ACTION_PAUSE_SERVICE
 import com.example.fitnesstracker.util.const.Constants.ACTION_START_SERVICE
 import com.example.fitnesstracker.util.const.Constants.ACTION_STOP_SERVICE
@@ -39,8 +42,15 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
 
     override fun setup(savedInstanceState: Bundle?) {
         setupMapView(savedInstanceState)
+        setupCallbacks()
         setupButtonsCallbacks()
         setupObservers()
+    }
+
+    private fun setupCallbacks() {
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            findNavController().navigate(TrackingFragmentDirections.actionTrackingFragmentToRunFragment())
+        }
     }
 
     private fun setupMapView(savedInstanceState: Bundle?) {
@@ -59,6 +69,7 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
                 when (state?.buttonName) {
                     getString(R.string.start) -> {
                         sendCommandToService(ACTION_START_SERVICE)
+                        moveCameraToUser()
                     }
                     getString(R.string.pause) -> {
                         sendCommandToService(ACTION_PAUSE_SERVICE)
@@ -79,6 +90,9 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
             pathPoints = it
             drawLatestPolyline()
             moveCameraToUser()
+        }
+        TrackingService.timeRunInMillis.observe(viewLifecycleOwner) {
+            binding.time = TrackingUtility.getFormattedStopWatchTime(it, true)
         }
     }
 

@@ -37,6 +37,8 @@
     <string name="finish_run">Finish Run</string>
     <string name="fitness_tracker">Fitness Tracker</string>
     <string name="zeros">00:00:00</string>
+    <string name="zeros_with_millis">00:00:00:00</string>
     <string name="finish">Finish</string>
     <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
 </resources>

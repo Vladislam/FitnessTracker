@@ -12,6 +12,7 @@ import com.example.fitnesstracker.R
 import com.example.fitnesstracker.databinding.FragmentSetupBinding
 import com.example.fitnesstracker.ui.fragments.base.BaseFragment
 import com.example.fitnesstracker.ui.viewmodels.SetupViewModel
+import com.example.fitnesstracker.util.const.Constants.ACTION_SHOW_TRACKING_FRAGMENT
 import com.example.fitnesstracker.util.extensions.throttleFirstClicks
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,7 +25,7 @@ class SetupFragment : BaseFragment(R.layout.fragment_setup) {
     private val viewModel: SetupViewModel by viewModels()
 
     override fun setup(savedInstanceState: Bundle?) {
-        if (viewModel.preferencesFlow.value?.isFirstTime != false)
+        if (viewModel.preferencesFlow.value?.isFirstTime != false && requireActivity().intent.action != ACTION_SHOW_TRACKING_FRAGMENT)
             findNavController().navigate(SetupFragmentDirections.actionSetupFragmentToRunFragment())
         setupEditTexts()
         setupButtons()

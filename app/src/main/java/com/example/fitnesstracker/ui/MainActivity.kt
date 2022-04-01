@@ -12,6 +12,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.fitnesstracker.MainNavGraphDirections
 import com.example.fitnesstracker.R
 import com.example.fitnesstracker.databinding.ActivityMainBinding
+import com.example.fitnesstracker.ui.fragments.TrackingFragmentDirections
 import com.example.fitnesstracker.util.const.Constants.ACTION_SHOW_TRACKING_FRAGMENT
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -69,6 +70,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp() || super.onSupportNavigateUp()
+        return if (intent?.action == ACTION_SHOW_TRACKING_FRAGMENT && navController.currentDestination?.id == R.id.trackingFragment) {
+            navController.navigate(TrackingFragmentDirections.actionTrackingFragmentToRunFragment())
+            true
+        } else {
+            navController.navigateUp() || super.onSupportNavigateUp()
+        }
     }
 }

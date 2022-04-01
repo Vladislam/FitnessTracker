@@ -10,6 +10,10 @@
         <variable
             name="state"
             type="com.example.fitnesstracker.data.models.TrackingUIState" />
+
+        <variable
+            name="time"
+            type="String" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -26,12 +30,13 @@
                 android:id="@+id/tvTimer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/zeros"
+                android:text="@{time}"
                 android:textSize="50sp"
                 app:layout_constraintBottom_toTopOf="@+id/btnToggleRun"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="@string/zeros_with_millis" />
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnToggleRun"

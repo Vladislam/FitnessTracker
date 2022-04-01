@@ -4,6 +4,7 @@ import android.Manifest
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import androidx.activity.addCallback
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -43,8 +44,15 @@ class RunFragment : BaseFragment(R.layout.fragment_run) {
     private val viewModel: RunViewModel by viewModels()
 
     override fun setup(savedInstanceState: Bundle?) {
+        setupCallbacks()
         requestPermission()
         setupFab()
+    }
+
+    private fun setupCallbacks() {
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            requireActivity().finish()
+        }
     }
 
     private fun setupFab() {
