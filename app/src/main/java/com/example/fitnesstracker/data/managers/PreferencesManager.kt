@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.fitnesstracker.R
+import com.example.fitnesstracker.data.managers.PreferencesManager.PreferencesKeys.FIRST_TIME
 import com.example.fitnesstracker.data.managers.PreferencesManager.PreferencesKeys.NAME
 import com.example.fitnesstracker.data.managers.PreferencesManager.PreferencesKeys.SORT_METHOD
 import com.example.fitnesstracker.data.managers.PreferencesManager.PreferencesKeys.WEIGHT
@@ -30,12 +31,14 @@ class PreferencesManager @Inject constructor(
         private const val SORT_TAG = "sort_method"
         private const val NAME_TAG = "name"
         private const val WEIGHT_TAG = "weight"
+        private const val FIRST_TIME_TAG = "first_time"
     }
 
     private object PreferencesKeys {
         val SORT_METHOD = intPreferencesKey(SORT_TAG)
         val NAME = stringPreferencesKey(NAME_TAG)
         val WEIGHT = doublePreferencesKey(WEIGHT_TAG)
+        val FIRST_TIME = booleanPreferencesKey(FIRST_TIME_TAG)
     }
 
     private val Context.dataStore by preferencesDataStore(PREFERENCES_NAME)
@@ -79,11 +82,17 @@ class PreferencesManager @Inject constructor(
             preferences[WEIGHT] = weight
         }
     }
+    suspend fun updateIsFirstFirstTime(isFirst: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[FIRST_TIME] = isFirst
+        }
+    }
 
     private fun mapUserPreferences(preferences: Preferences): UserPreferences {
         val sortMethod = SortMethod.fromOrdinal(preferences[SORT_METHOD] ?: 0)
         val name = preferences[NAME] ?: context.getString(R.string.user)
         val weight = preferences[WEIGHT] ?: 0.0
-        return UserPreferences(sortMethod, name, weight)
+        val isFirstTime = preferences[FIRST_TIME] ?: true
+        return UserPreferences(sortMethod, name, weight, isFirstTime)
     }
 }

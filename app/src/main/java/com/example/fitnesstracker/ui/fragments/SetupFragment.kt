@@ -12,11 +12,8 @@ import com.example.fitnesstracker.R
 import com.example.fitnesstracker.databinding.FragmentSetupBinding
 import com.example.fitnesstracker.ui.fragments.base.BaseFragment
 import com.example.fitnesstracker.ui.viewmodels.SetupViewModel
-import com.example.fitnesstracker.util.extensions.throttleFirst
+import com.example.fitnesstracker.util.extensions.throttleFirstClicks
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import ru.ldralighieri.corbind.view.clicks
 
 @AndroidEntryPoint
 class SetupFragment : BaseFragment(R.layout.fragment_setup) {
@@ -27,18 +24,17 @@ class SetupFragment : BaseFragment(R.layout.fragment_setup) {
     private val viewModel: SetupViewModel by viewModels()
 
     override fun setup(savedInstanceState: Bundle?) {
+        if (viewModel.preferencesFlow.value?.isFirstTime != false)
+            findNavController().navigate(SetupFragmentDirections.actionSetupFragmentToRunFragment())
         setupEditTexts()
         setupButtons()
     }
 
     private fun setupButtons() {
         binding.apply {
-            btnContinue.clicks()
-                .throttleFirst()
-                .onEach {
-                    validateContinueClick()
-                }
-                .launchIn(lifecycleScope)
+            btnContinue.throttleFirstClicks(lifecycleScope) {
+                validateContinueClick()
+            }
         }
     }
 
