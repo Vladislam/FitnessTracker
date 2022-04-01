@@ -56,7 +56,7 @@ fun <T> Flow<T>.throttleFirst(periodMillis: Long = SMALL_THROTTLE): Flow<T> {
     }
 }
 
-fun View.throttleClicks(
+fun View.throttleFirstClicks(
     scope: CoroutineScope,
     periodMillis: Long = SMALL_THROTTLE,
     onEach: () -> Unit,

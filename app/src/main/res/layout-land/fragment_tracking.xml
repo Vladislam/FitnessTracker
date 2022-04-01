@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
+        <import type="android.view.View" />
+
         <variable
-            name="buttonName"
-            type="String" />
+            name="state"
+            type="com.example.fitnesstracker.data.models.TrackingUIState" />
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -29,15 +33,58 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <com.google.android.material.button.MaterialButton
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnToggleRun"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/start"
+                android:backgroundTint="?attr/colorPrimary"
+                android:elevation="4dp"
+                app:cardCornerRadius="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnFinish"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvTimer">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="22dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="22dp"
+                    android:paddingBottom="8dp"
+                    android:text="@{state.buttonName}"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:textSize="20sp"
+                    tools:text="@string/start" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btnFinish"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="?attr/colorPrimary"
+                android:elevation="4dp"
+                android:visibility="@{state.isPaused ? View.VISIBLE : View.GONE }"
+                app:cardCornerRadius="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvTimer" />
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@id/btnToggleRun"
+                app:layout_constraintTop_toBottomOf="@+id/tvTimer">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="22dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="22dp"
+                    android:paddingBottom="8dp"
+                    android:text="@string/finish_run"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:textSize="20sp" />
+
+            </com.google.android.material.card.MaterialCardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
