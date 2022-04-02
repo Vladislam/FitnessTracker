@@ -41,4 +41,9 @@
     <string name="finish">Finish</string>
     <string name="pause">Pause</string>
     <string name="resume">Resume</string>
+    <string name="cancel_run">Cancel Run</string>
+    <string name="cancel_run_message">Are you sure you want to cancel the current run and delete all its data?</string>
+    <string name="cancel_run_title">Cancel the Run?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

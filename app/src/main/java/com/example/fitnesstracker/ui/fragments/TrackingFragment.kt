@@ -3,10 +3,9 @@ package com.example.fitnesstracker.ui.fragments
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.activity.addCallback
+import androidx.core.view.get
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -26,6 +25,7 @@ import com.example.fitnesstracker.util.extensions.throttleFirstClicks
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -34,11 +34,14 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
     private var _binding: FragmentTrackingBinding? = null
     private val binding get() = _binding!!
 
+    private var map: GoogleMap? = null
+
     private val viewModel: TrackingViewModel by viewModels()
 
-    private var pathPoints = mutableListOf<Polyline>()
+    private var menu: Menu? = null
 
-    private var map: GoogleMap? = null
+    private var pathPoints = mutableListOf<Polyline>()
+    private var curTimeInMillis = 0L
 
     override fun setup(savedInstanceState: Bundle?) {
         setupMapView(savedInstanceState)
@@ -55,8 +58,8 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
 
     private fun setupMapView(savedInstanceState: Bundle?) {
         binding.apply {
-            mapView?.onCreate(savedInstanceState)
-            mapView?.getMapAsync {
+            mapView.onCreate(savedInstanceState)
+            mapView.getMapAsync {
                 map = it
                 drawAllPolylines()
             }
@@ -75,6 +78,7 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
                         sendCommandToService(ACTION_PAUSE_SERVICE)
                     }
                 }
+                menu?.get(0)?.isVisible = true
             }
             btnFinish.throttleFirstClicks(lifecycleScope) {
                 sendCommandToService(ACTION_STOP_SERVICE)
@@ -92,7 +96,8 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
             moveCameraToUser()
         }
         TrackingService.timeRunInMillis.observe(viewLifecycleOwner) {
-            binding.time = TrackingUtility.getFormattedStopWatchTime(it, true)
+            curTimeInMillis = it
+            binding.time = TrackingUtility.getFormattedStopWatchTime(curTimeInMillis, true)
         }
     }
 
@@ -140,8 +145,41 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
             requireContext().startService(it)
         }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_fragment_tracking, menu)
+        this.menu = menu
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        if (curTimeInMillis > 0L) {
+            menu[0].isVisible = true
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_cancel_run) {
+            showCancelRunDialog()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun showCancelRunDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.cancel_run_title)
+            .setMessage(R.string.cancel_run_message)
+            .setIcon(android.R.drawable.ic_menu_delete)
+            .setPositiveButton(R.string.yes) { _, _ ->
+                sendCommandToService(ACTION_STOP_SERVICE)
+                findNavController().navigate(TrackingFragmentDirections.actionTrackingFragmentToRunFragment())
+            }
+            .setNegativeButton(R.string.no, null)
+            .create().show()
+    }
+
     override fun setupBinding(inflater: LayoutInflater, container: ViewGroup?): View {
         _binding = FragmentTrackingBinding.inflate(inflater)
+        setHasOptionsMenu(true)
         return binding.root
     }
 
@@ -152,31 +190,31 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
 
     override fun onResume() {
         super.onResume()
-        binding.mapView?.onResume()
+        binding.mapView.onResume()
     }
 
     override fun onStart() {
         super.onStart()
-        binding.mapView?.onStart()
+        binding.mapView.onStart()
     }
 
     override fun onPause() {
         super.onPause()
-        binding.mapView?.onPause()
+        binding.mapView.onPause()
     }
 
     override fun onStop() {
         super.onStop()
-        binding.mapView?.onStop()
+        binding.mapView.onStop()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        binding.mapView?.onLowMemory()
+        binding.mapView.onLowMemory()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        binding.mapView?.onSaveInstanceState(outState)
+        binding.mapView.onSaveInstanceState(outState)
     }
 }

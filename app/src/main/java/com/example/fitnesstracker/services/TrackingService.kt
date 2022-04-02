@@ -41,6 +41,7 @@ class TrackingService : LifecycleService() {
 
     private val timer = Timer()
     private var isFirstRun = true
+    private var isServiceKilled = false
 
     private val locationCallback = TrackingLocationCallback { addPathPoint(it) }
 
@@ -79,9 +80,8 @@ class TrackingService : LifecycleService() {
                     serviceState.postValue(ServiceState.Paused)
                 }
                 ACTION_STOP_SERVICE -> {
+                    killService()
                     Timber.d("Stopped service")
-                    stopSelf()
-                    serviceState.postValue(ServiceState.Stopped)
                 }
             }
         }
@@ -116,9 +116,11 @@ class TrackingService : LifecycleService() {
             isAccessible = true
             set(curNotificationBuilder, ArrayList<NotificationCompat.Action>())
         }
-        curNotificationBuilder = notificationBuilder
-            .addAction(R.drawable.ic_pause, notificationActionText, pendingIntent)
-        notificationManager.notify(NOTIFICATION_ID, curNotificationBuilder.build())
+        if (!isServiceKilled) {
+            curNotificationBuilder = notificationBuilder
+                .addAction(R.drawable.ic_pause, notificationActionText, pendingIntent)
+            notificationManager.notify(NOTIFICATION_ID, curNotificationBuilder.build())
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -159,10 +161,12 @@ class TrackingService : LifecycleService() {
 
         startForeground(NOTIFICATION_ID, notificationBuilder.build())
         timer.timeRunInSeconds.observe(this) {
-            val notification = curNotificationBuilder
-                .setContentText(TrackingUtility.getFormattedStopWatchTime(it * 1000))
-                .build()
-            notificationManager.notify(NOTIFICATION_ID, notification)
+            if (!isServiceKilled) {
+                val notification = curNotificationBuilder
+                    .setContentText(TrackingUtility.getFormattedStopWatchTime(it * 1000))
+                    .build()
+                notificationManager.notify(NOTIFICATION_ID, notification)
+            }
         }
     }
 
@@ -174,5 +178,22 @@ class TrackingService : LifecycleService() {
             IMPORTANCE_LOW
         )
         notificationManager.createNotificationChannel(channel)
+    }
+
+    private fun postInitialValues() {
+        serviceState.postValue(ServiceState.Stopped)
+        pathPoints.postValue(mutableListOf())
+        timer.timeRunInSeconds.postValue(0L)
+        timeRunInMillis.postValue(0L)
+    }
+
+    private fun killService() {
+        isServiceKilled = true
+        isFirstRun = true
+        timer.isTimerEnabled = false
+        stopForeground(true)
+        stopSelf()
+        postInitialValues()
+        serviceState.postValue(ServiceState.Stopped)
     }
 }

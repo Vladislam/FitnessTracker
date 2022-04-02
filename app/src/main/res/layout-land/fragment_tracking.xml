@@ -94,7 +94,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.gms.maps.MapView
-            android:id="@+id/mavView"
+            android:id="@+id/mapView"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1" />
