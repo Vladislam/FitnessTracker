@@ -24,6 +24,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:loadImage="@{run.image}"
             tools:src="@drawable/ic_launcher_background" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -44,11 +45,12 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="4dp"
             android:textAlignment="center"
+            app:dateText="@{run.timestamp}"
             app:layout_constraintEnd_toStartOf="@id/dateToDuration"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvDateLabel"
-            tools:text="24.03.2022" />
+            tools:text="24.03.22" />
 
         <View
             android:id="@+id/dateToDuration"
@@ -67,9 +69,9 @@
             android:layout_marginTop="16dp"
             android:maxLines="1"
             android:text="@string/duration"
-            app:layout_constraintEnd_toStartOf="@+id/timeToDistance"
+            app:layout_constraintEnd_toEndOf="@+id/tvTime"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/dateToDuration"
+            app:layout_constraintStart_toStartOf="@+id/tvTime"
             app:layout_constraintTop_toBottomOf="@+id/ivRunImage" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -84,6 +86,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/dateToDuration"
             app:layout_constraintTop_toBottomOf="@+id/tvTimeLabel"
+            app:timeText="@{run.runDuration}"
             tools:text="00:24:54" />
 
         <View
@@ -114,13 +117,14 @@
             android:layout_marginStart="4dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="4dp"
-            android:text="@{run.distanceInMeters + ` Km`}"
             android:textAlignment="center"
+            app:distanceToKm="@{run.distanceInMeters}"
             app:layout_constraintEnd_toStartOf="@+id/distanceToSpeed"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/timeToDistance"
             app:layout_constraintTop_toBottomOf="@+id/tvDistanceLabel"
-            tools:text="24 Km" />
+            app:layout_constraintWidth_max="98dp"
+            tools:text="24Km" />
 
         <View
             android:id="@+id/distanceToSpeed"
@@ -151,13 +155,13 @@
             android:layout_marginStart="4dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="4dp"
-            android:text="@{run.avgSpeedInKMH + ` Km/H`}"
+            android:text="@{run.avgSpeedInKMH + `Km/H`}"
             android:textAlignment="center"
             app:layout_constraintEnd_toStartOf="@+id/speedToCalories"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/distanceToSpeed"
             app:layout_constraintTop_toBottomOf="@+id/tvAvgSpeedLabel"
-            tools:text="24.5 Km/H" />
+            tools:text="24.5Km/H" />
 
         <View
             android:id="@+id/speedToCalories"
@@ -175,24 +179,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:ellipsize="end"
             android:text="@string/calories"
             app:layout_constraintEnd_toEndOf="@id/tvCalories"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="@+id/tvCalories"
             app:layout_constraintTop_toBottomOf="@+id/ivRunImage" />
 
-        <com.google.android.material.textview.MaterialTextView
+        <TextView
             android:id="@+id/tvCalories"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginTop="16dp"
-            android:text="@{run.caloriesBurned}"
             android:textAlignment="center"
+            app:caloriesText="@{run.caloriesBurned}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/speedToCalories"
             app:layout_constraintTop_toBottomOf="@+id/tvCaloriesLabel"
+            app:layout_constraintWidth_max="86dp"
             tools:text="443" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

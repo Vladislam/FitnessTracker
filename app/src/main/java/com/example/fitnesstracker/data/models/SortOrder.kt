@@ -1,6 +1,6 @@
 package com.example.fitnesstracker.data.models
 
-enum class SortMethod {
+enum class SortOrder {
     BY_DATE, BY_DURATION, BY_DISTANCE, BY_SPEED, BY_CALORIES;
 
     companion object {

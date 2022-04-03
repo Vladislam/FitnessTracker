@@ -3,9 +3,10 @@ package com.example.fitnesstracker.repositories
 import androidx.lifecycle.LiveData
 import com.example.fitnesstracker.data.RunDao
 import com.example.fitnesstracker.data.models.RunEntity
-import com.example.fitnesstracker.util.RealmLiveData
+import com.example.fitnesstracker.data.models.SortOrder
+import io.realm.RealmResults
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
-import javax.inject.Singleton
 
 class MainRepository @Inject constructor(
     private val dao: RunDao
@@ -14,16 +15,22 @@ class MainRepository @Inject constructor(
 
     fun deleteRun(run: RunEntity) = dao.deleteRun(run)
 
-    fun getAllRunsSortedByDate(): RealmLiveData<RunEntity> = dao.getAllRunsSortedByDate()
+    fun deleteAllRuns() = dao.deleteAllRuns()
 
-    fun getAllRunsSortedByAvgSpeed(): RealmLiveData<RunEntity> = dao.getAllRunsSortedByAvgSpeed()
+    private fun getAllRunsSortedByDate(): Flow<RealmResults<RunEntity>> =
+        dao.getAllRunsSortedByDate()
 
-    fun getAllRunsSortedByCaloriesBurned(): RealmLiveData<RunEntity> =
+    private fun getAllRunsSortedByAvgSpeed(): Flow<RealmResults<RunEntity>> =
+        dao.getAllRunsSortedByAvgSpeed()
+
+    private fun getAllRunsSortedByCaloriesBurned(): Flow<RealmResults<RunEntity>> =
         dao.getAllRunsSortedByCaloriesBurned()
 
-    fun getAllRunsSortedByDistance(): RealmLiveData<RunEntity> = dao.getAllRunsSortedByDistance()
+    private fun getAllRunsSortedByDistance(): Flow<RealmResults<RunEntity>> =
+        dao.getAllRunsSortedByDistance()
 
-    fun getAllRunsSortedByDuration(): RealmLiveData<RunEntity> = dao.getAllRunsSortedByDuration()
+    private fun getAllRunsSortedByDuration(): Flow<RealmResults<RunEntity>> =
+        dao.getAllRunsSortedByDuration()
 
     fun getTotalAverageSpeed(): LiveData<Double> = dao.getTotalAvgSpeed()
 
@@ -32,4 +39,24 @@ class MainRepository @Inject constructor(
     fun getTotalDistance(): LiveData<Int> = dao.getTotalDistance()
 
     fun getTotalRunningTime(): LiveData<Long> = dao.getTotalRunningTime()
+
+    fun getRuns(sortOrder: SortOrder): Flow<RealmResults<RunEntity>> {
+        return when (sortOrder) {
+            SortOrder.BY_DATE -> {
+                getAllRunsSortedByDate()
+            }
+            SortOrder.BY_CALORIES -> {
+                getAllRunsSortedByCaloriesBurned()
+            }
+            SortOrder.BY_DISTANCE -> {
+                getAllRunsSortedByDistance()
+            }
+            SortOrder.BY_DURATION -> {
+                getAllRunsSortedByDuration()
+            }
+            SortOrder.BY_SPEED -> {
+                getAllRunsSortedByAvgSpeed()
+            }
+        }
+    }
 }

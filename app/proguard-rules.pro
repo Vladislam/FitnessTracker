@@ -25,5 +25,5 @@
 -keep class com.example.fitnesstracker.data.models.RunEntity
 -keep class com.example.fitnesstracker.data.models.Error
 -keep class com.example.fitnesstracker.data.models.ServiceState
--keep class com.example.fitnesstracker.data.models.SortMethod
+-keep class com.example.fitnesstracker.data.models.SortOrder
 -keep class com.example.fitnesstracker.data.models.UserPreferences

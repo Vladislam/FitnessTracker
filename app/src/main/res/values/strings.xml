@@ -46,4 +46,6 @@
     <string name="cancel_run_title">Cancel the Run?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="run_was_saved">Run was successfully saved</string>
+    <string name="dismiss">Dismiss</string>
 </resources>

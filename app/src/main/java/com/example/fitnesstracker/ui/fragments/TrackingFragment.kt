@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.fitnesstracker.R
+import com.example.fitnesstracker.data.models.RunEntity
 import com.example.fitnesstracker.databinding.FragmentTrackingBinding
 import com.example.fitnesstracker.services.TrackingService
 import com.example.fitnesstracker.ui.fragments.base.BaseFragment
@@ -21,12 +22,17 @@ import com.example.fitnesstracker.util.const.Constants.ACTION_START_SERVICE
 import com.example.fitnesstracker.util.const.Constants.ACTION_STOP_SERVICE
 import com.example.fitnesstracker.util.const.Constants.MAP_ZOOM
 import com.example.fitnesstracker.util.const.Constants.POLYLINE_WIDTH
+import com.example.fitnesstracker.util.converters.RunSnapshotConverter
+import com.example.fitnesstracker.util.extensions.showSnackBarWithAction
 import com.example.fitnesstracker.util.extensions.throttleFirstClicks
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
+import kotlin.math.round
 
 @AndroidEntryPoint
 class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
@@ -42,6 +48,8 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
 
     private var pathPoints = mutableListOf<Polyline>()
     private var curTimeInMillis = 0L
+
+    private var weight = 80f
 
     override fun setup(savedInstanceState: Bundle?) {
         setupMapView(savedInstanceState)
@@ -81,7 +89,8 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
                 menu?.get(0)?.isVisible = true
             }
             btnFinish.throttleFirstClicks(lifecycleScope) {
-                sendCommandToService(ACTION_STOP_SERVICE)
+                zoomToSeeTheWholeRun()
+                endRunAndSave()
             }
         }
     }
@@ -98,6 +107,55 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
         TrackingService.timeRunInMillis.observe(viewLifecycleOwner) {
             curTimeInMillis = it
             binding.time = TrackingUtility.getFormattedStopWatchTime(curTimeInMillis, true)
+        }
+    }
+
+    private fun zoomToSeeTheWholeRun() {
+        val bounds = LatLngBounds.Builder()
+        for (polyline in pathPoints) {
+            for (position in polyline) {
+                bounds.include(position)
+            }
+        }
+        binding.mapView.apply {
+            map?.moveCamera(
+                CameraUpdateFactory.newLatLngBounds(
+                    bounds.build(),
+                    width,
+                    height,
+                    (height * 0.05f).toInt()
+                )
+            )
+        }
+    }
+
+    private fun endRunAndSave() {
+        map?.snapshot { bitmap ->
+            var distanceInMeters = 0
+            for (polyline in pathPoints) {
+                distanceInMeters += TrackingUtility.calculatePolylineLength(polyline).toInt()
+            }
+            val averageSpeed =
+                round((distanceInMeters / 1000.0) / (curTimeInMillis / 1000.0 / 60.0 / 60.0) * 10) / 10.0
+            val dateTimestamp = Calendar.getInstance().timeInMillis
+            val caloriesBurned = ((distanceInMeters / 1000f) * weight).toInt()
+            val run = RunEntity(
+                image = RunSnapshotConverter.fromBitmapToByteArray(bitmap),
+                timestamp = dateTimestamp,
+                avgSpeedInKMH = averageSpeed,
+                distanceInMeters = distanceInMeters,
+                runDuration = curTimeInMillis,
+                caloriesBurned = caloriesBurned,
+            )
+            viewModel.insertRun(run)
+            showSnackBarWithAction(
+                title = getString(R.string.run_was_saved),
+                actionTitle = getString(R.string.dismiss),
+                view = requireActivity().findViewById(R.id.rootView)
+            ) {
+                dismiss()
+            }
+            sendCommandToService(ACTION_STOP_SERVICE)
         }
     }
 

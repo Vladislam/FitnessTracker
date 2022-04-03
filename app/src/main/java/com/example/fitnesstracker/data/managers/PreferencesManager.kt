@@ -9,7 +9,7 @@ import com.example.fitnesstracker.data.managers.PreferencesManager.PreferencesKe
 import com.example.fitnesstracker.data.managers.PreferencesManager.PreferencesKeys.SORT_METHOD
 import com.example.fitnesstracker.data.managers.PreferencesManager.PreferencesKeys.WEIGHT
 import com.example.fitnesstracker.data.models.Error
-import com.example.fitnesstracker.data.models.SortMethod
+import com.example.fitnesstracker.data.models.SortOrder
 import com.example.fitnesstracker.data.models.UserPreferences
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -62,7 +62,7 @@ class PreferencesManager @Inject constructor(
     val errorFlow = _errorFlow.asSharedFlow()
 
     suspend fun updateSortMethod(sortMethod: Int) {
-        if (sortMethod !in 0..SortMethod.values().size) {
+        if (sortMethod !in 0..SortOrder.values().size) {
             _errorFlow.emit(Error(context.getString(R.string.error_sort_doesnt_exist)))
             return
         }
@@ -82,6 +82,7 @@ class PreferencesManager @Inject constructor(
             preferences[WEIGHT] = weight
         }
     }
+
     suspend fun updateIsFirstFirstTime(isFirst: Boolean) {
         dataStore.edit { preferences ->
             preferences[FIRST_TIME] = isFirst
@@ -89,7 +90,7 @@ class PreferencesManager @Inject constructor(
     }
 
     private fun mapUserPreferences(preferences: Preferences): UserPreferences {
-        val sortMethod = SortMethod.fromOrdinal(preferences[SORT_METHOD] ?: 0)
+        val sortMethod = SortOrder.fromOrdinal(preferences[SORT_METHOD] ?: 0)
         val name = preferences[NAME] ?: context.getString(R.string.user)
         val weight = preferences[WEIGHT] ?: 0.0
         val isFirstTime = preferences[FIRST_TIME] ?: true
