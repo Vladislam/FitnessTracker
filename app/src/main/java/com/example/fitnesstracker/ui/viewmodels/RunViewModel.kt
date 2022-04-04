@@ -24,4 +24,8 @@ class RunViewModel @Inject constructor(
     fun onSortChangeClick(sortOrder: SortOrder) = viewModelScope.launch {
         preferences.updateSortMethod(sortOrder.ordinal)
     }
+
+    fun deleteAllRuns() {
+        repository.deleteAllRuns()
+    }
 }

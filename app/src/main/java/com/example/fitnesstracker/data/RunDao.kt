@@ -30,6 +30,12 @@ class RunDao @Inject constructor(
         }
     }
 
+    fun deleteAllRuns() {
+        realm.executeTransactionAsync {
+            it.delete(RunEntity::class.java)
+        }
+    }
+
     fun getAllRunsSortedByDate(): Flow<RealmResults<RunEntity>> =
         realm.where(RunEntity::class.java)
             .findAllAsync()
@@ -75,8 +81,4 @@ class RunDao @Inject constructor(
     fun getTotalAvgSpeed(): LiveData<Double> =
         realm.where(RunEntity::class.java).findAllAsync().asLiveData()
             .map { it.average(RunEntity::avgSpeedInKMH.name) }
-
-    fun deleteAllRuns() {
-        realm.delete(RunEntity::class.java)
-    }
 }

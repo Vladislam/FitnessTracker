@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.fitnesstracker.R
 import com.example.fitnesstracker.data.models.SortOrder
 import com.example.fitnesstracker.databinding.FragmentRunBinding
@@ -117,6 +118,10 @@ class RunFragment : BaseFragment(R.layout.fragment_run) {
                         4 -> it.findItem(R.id.action_sort_by_calories_burned).isChecked = true
                         else -> {}
                     }
+                    (binding.rvRuns.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
+                        0,
+                        0
+                    )
                 }
             }
         }
@@ -125,6 +130,7 @@ class RunFragment : BaseFragment(R.layout.fragment_run) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_delete_all_runs -> {
+                viewModel.deleteAllRuns()
                 true
             }
             R.id.action_sort_by_avg_speed -> {

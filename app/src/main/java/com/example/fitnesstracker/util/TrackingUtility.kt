@@ -2,9 +2,11 @@ package com.example.fitnesstracker.util
 
 import android.Manifest
 import android.content.Context
+import android.graphics.Bitmap
 import android.location.Location
 import android.os.Build
 import pub.devrel.easypermissions.EasyPermissions
+import java.io.ByteArrayOutputStream
 import java.util.concurrent.TimeUnit
 
 object TrackingUtility {
@@ -56,6 +58,13 @@ object TrackingUtility {
             String.format("%02d:%02d:%02d", hours, minutes, seconds)
         } else {
             String.format("%02d:%02d:%02d:%02d", hours, minutes, seconds, milliseconds / 10)
+        }
+    }
+
+    fun getByteArrayFromBitmap(bitmap: Bitmap?): ByteArray {
+        ByteArrayOutputStream().also {
+            bitmap?.compress(Bitmap.CompressFormat.PNG, 100, it)
+            return it.toByteArray()
         }
     }
 }

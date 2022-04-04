@@ -1,7 +1,6 @@
 package com.example.fitnesstracker.ui.fragments
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import androidx.activity.addCallback
@@ -15,23 +14,18 @@ import com.example.fitnesstracker.databinding.FragmentTrackingBinding
 import com.example.fitnesstracker.services.TrackingService
 import com.example.fitnesstracker.ui.fragments.base.BaseFragment
 import com.example.fitnesstracker.ui.viewmodels.TrackingViewModel
-import com.example.fitnesstracker.util.Polyline
+import com.example.fitnesstracker.data.managers.GoogleMapsManager
 import com.example.fitnesstracker.util.TrackingUtility
+import com.example.fitnesstracker.util.TrackingUtility.getByteArrayFromBitmap
 import com.example.fitnesstracker.util.const.Constants.ACTION_PAUSE_SERVICE
 import com.example.fitnesstracker.util.const.Constants.ACTION_START_SERVICE
 import com.example.fitnesstracker.util.const.Constants.ACTION_STOP_SERVICE
-import com.example.fitnesstracker.util.const.Constants.MAP_ZOOM
-import com.example.fitnesstracker.util.const.Constants.POLYLINE_WIDTH
-import com.example.fitnesstracker.util.converters.RunSnapshotConverter
 import com.example.fitnesstracker.util.extensions.showSnackBarWithAction
 import com.example.fitnesstracker.util.extensions.throttleFirstClicks
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 import kotlin.math.round
 
 @AndroidEntryPoint
@@ -40,13 +34,13 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
     private var _binding: FragmentTrackingBinding? = null
     private val binding get() = _binding!!
 
-    private var map: GoogleMap? = null
-
     private val viewModel: TrackingViewModel by viewModels()
+
+    @Inject
+    lateinit var mapManager: GoogleMapsManager
 
     private var menu: Menu? = null
 
-    private var pathPoints = mutableListOf<Polyline>()
     private var curTimeInMillis = 0L
 
     private var weight = 80f
@@ -68,8 +62,8 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
         binding.apply {
             mapView.onCreate(savedInstanceState)
             mapView.getMapAsync {
-                map = it
-                drawAllPolylines()
+                mapManager.map = it
+                mapManager.drawAllPolylines()
             }
         }
     }
@@ -80,7 +74,7 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
                 when (state?.buttonName) {
                     getString(R.string.start) -> {
                         sendCommandToService(ACTION_START_SERVICE)
-                        moveCameraToUser()
+                        mapManager.moveCameraToUser()
                     }
                     getString(R.string.pause) -> {
                         sendCommandToService(ACTION_PAUSE_SERVICE)
@@ -89,7 +83,7 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
                 menu?.get(0)?.isVisible = true
             }
             btnFinish.throttleFirstClicks(lifecycleScope) {
-                zoomToSeeTheWholeRun()
+                mapManager.zoomToSeeTheWholeRun(binding.mapView.width, binding.mapView.height)
                 endRunAndSave()
             }
         }
@@ -100,9 +94,11 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
             binding.state = it
         }
         TrackingService.pathPoints.observe(viewLifecycleOwner) {
-            pathPoints = it
-            drawLatestPolyline()
-            moveCameraToUser()
+            mapManager.apply {
+                pathPoints = it
+                drawLatestPolyline()
+                moveCameraToUser()
+            }
         }
         TrackingService.timeRunInMillis.observe(viewLifecycleOwner) {
             curTimeInMillis = it
@@ -110,44 +106,21 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
         }
     }
 
-    private fun zoomToSeeTheWholeRun() {
-        val bounds = LatLngBounds.Builder()
-        for (polyline in pathPoints) {
-            for (position in polyline) {
-                bounds.include(position)
-            }
-        }
-        binding.mapView.apply {
-            map?.moveCamera(
-                CameraUpdateFactory.newLatLngBounds(
-                    bounds.build(),
-                    width,
-                    height,
-                    (height * 0.05f).toInt()
-                )
-            )
-        }
-    }
 
     private fun endRunAndSave() {
-        map?.snapshot { bitmap ->
-            var distanceInMeters = 0
-            for (polyline in pathPoints) {
-                distanceInMeters += TrackingUtility.calculatePolylineLength(polyline).toInt()
-            }
-            val averageSpeed =
-                round((distanceInMeters / 1000.0) / (curTimeInMillis / 1000.0 / 60.0 / 60.0) * 10) / 10.0
-            val dateTimestamp = Calendar.getInstance().timeInMillis
-            val caloriesBurned = ((distanceInMeters / 1000f) * weight).toInt()
+        mapManager.map?.snapshot { bitmap ->
+            val distanceInMeters = mapManager.distanceInMeters()
+
             val run = RunEntity(
-                image = RunSnapshotConverter.fromBitmapToByteArray(bitmap),
-                timestamp = dateTimestamp,
-                avgSpeedInKMH = averageSpeed,
+                image = getByteArrayFromBitmap(bitmap),
+                timestamp = Calendar.getInstance().timeInMillis,
+                avgSpeedInKMH = round((distanceInMeters / 1000.0) / (curTimeInMillis / 1000.0 / 60.0 / 60.0) * 10) / 10.0,
                 distanceInMeters = distanceInMeters,
                 runDuration = curTimeInMillis,
-                caloriesBurned = caloriesBurned,
+                caloriesBurned = ((distanceInMeters / 1000f) * weight).toInt(),
             )
             viewModel.insertRun(run)
+
             showSnackBarWithAction(
                 title = getString(R.string.run_was_saved),
                 actionTitle = getString(R.string.dismiss),
@@ -156,44 +129,6 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
                 dismiss()
             }
             sendCommandToService(ACTION_STOP_SERVICE)
-        }
-    }
-
-    private fun moveCameraToUser() {
-        if (pathPoints.isNotEmpty() && pathPoints.last().isNotEmpty()) {
-            map?.animateCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                    pathPoints.last().last(),
-                    MAP_ZOOM
-                )
-            )
-        }
-    }
-
-    private fun drawAllPolylines() {
-        for (polyline in pathPoints) {
-            map?.addPolyline(
-                PolylineOptions()
-                    .color(Color.RED)
-                    .width(POLYLINE_WIDTH)
-                    .addAll(polyline)
-            )
-        }
-    }
-
-    private fun drawLatestPolyline() {
-        if (pathPoints.isNotEmpty() && pathPoints.last().size > 1) {
-            val preLastLatLng = pathPoints.last()[pathPoints.last().size - 2]
-            val lastLatLng = pathPoints.last().last()
-            map?.addPolyline(
-                PolylineOptions()
-                    .color(Color.RED)
-                    .width(POLYLINE_WIDTH)
-                    .add(
-                        preLastLatLng,
-                        lastLatLng,
-                    )
-            )
         }
     }
 
