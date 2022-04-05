@@ -3,7 +3,10 @@ package com.example.fitnesstracker.ui.fragments
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import androidx.activity.addCallback
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -29,10 +32,7 @@ import pub.devrel.easypermissions.AppSettingsDialog
 import ru.ldralighieri.corbind.view.clicks
 
 @AndroidEntryPoint
-class RunFragment : BaseFragment(R.layout.fragment_run) {
-
-    private var _binding: FragmentRunBinding? = null
-    private val binding get() = _binding!!
+class RunFragment : BaseFragment<FragmentRunBinding>() {
 
     private lateinit var runAdapter: RunAdapter
 
@@ -157,14 +157,8 @@ class RunFragment : BaseFragment(R.layout.fragment_run) {
         }
     }
 
-    override fun setupBinding(inflater: LayoutInflater, container: ViewGroup?): View {
-        _binding = FragmentRunBinding.inflate(inflater)
+    override fun setupBinding(inflater: LayoutInflater): FragmentRunBinding {
         setHasOptionsMenu(true)
-        return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+        return FragmentRunBinding.inflate(inflater)
     }
 }

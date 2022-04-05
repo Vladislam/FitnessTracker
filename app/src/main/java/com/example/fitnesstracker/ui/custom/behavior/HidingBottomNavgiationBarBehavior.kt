@@ -7,7 +7,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.marginTop
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class CustomBehavior(context: Context?, attrs: AttributeSet?) :
+class HidingBottomNavgiationBarBehavior(context: Context?, attrs: AttributeSet?) :
     CoordinatorLayout.Behavior<View>(context, attrs) {
 
     override fun layoutDependsOn(

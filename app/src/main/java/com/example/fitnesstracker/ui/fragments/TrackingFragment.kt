@@ -2,19 +2,22 @@ package com.example.fitnesstracker.ui.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import androidx.activity.addCallback
 import androidx.core.view.get
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.fitnesstracker.R
+import com.example.fitnesstracker.data.managers.GoogleMapsManager
 import com.example.fitnesstracker.data.models.RunEntity
 import com.example.fitnesstracker.databinding.FragmentTrackingBinding
 import com.example.fitnesstracker.services.TrackingService
 import com.example.fitnesstracker.ui.fragments.base.BaseFragment
 import com.example.fitnesstracker.ui.viewmodels.TrackingViewModel
-import com.example.fitnesstracker.data.managers.GoogleMapsManager
 import com.example.fitnesstracker.util.TrackingUtility
 import com.example.fitnesstracker.util.TrackingUtility.getByteArrayFromBitmap
 import com.example.fitnesstracker.util.const.Constants.ACTION_PAUSE_SERVICE
@@ -29,10 +32,7 @@ import javax.inject.Inject
 import kotlin.math.round
 
 @AndroidEntryPoint
-class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
-
-    private var _binding: FragmentTrackingBinding? = null
-    private val binding get() = _binding!!
+class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
 
     private val viewModel: TrackingViewModel by viewModels()
 
@@ -170,16 +170,8 @@ class TrackingFragment : BaseFragment(R.layout.fragment_tracking) {
             .create().show()
     }
 
-    override fun setupBinding(inflater: LayoutInflater, container: ViewGroup?): View {
-        _binding = FragmentTrackingBinding.inflate(inflater)
-        setHasOptionsMenu(true)
-        return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+    override fun setupBinding(inflater: LayoutInflater): FragmentTrackingBinding =
+        FragmentTrackingBinding.inflate(inflater)
 
     override fun onResume() {
         super.onResume()

@@ -5,27 +5,35 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.viewbinding.ViewBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-abstract class BaseFragment(layout: Int) : Fragment(layout) {
+abstract class BaseFragment<T : ViewBinding> : Fragment() {
+
+    private var _binding: T? = null
+    protected val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        return setupBinding(inflater, container)
+        _binding = setupBinding(inflater)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setup(savedInstanceState)
     }
 
     protected abstract fun setup(savedInstanceState: Bundle?)
 
-    protected abstract fun setupBinding(inflater: LayoutInflater, container: ViewGroup?): View
+    protected abstract fun setupBinding(inflater: LayoutInflater): T
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 }
