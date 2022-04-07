@@ -1,4 +1,4 @@
-package com.example.fitnesstracker.services.callbacks
+package com.example.fitnesstracker.util
 
 import androidx.lifecycle.MutableLiveData
 import com.example.fitnesstracker.data.models.ServiceState

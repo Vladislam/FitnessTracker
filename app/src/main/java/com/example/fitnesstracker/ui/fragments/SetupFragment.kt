@@ -7,10 +7,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.fitnesstracker.R
+import com.example.fitnesstracker.data.models.UserPreferences
 import com.example.fitnesstracker.databinding.FragmentSetupBinding
 import com.example.fitnesstracker.ui.fragments.base.BaseFragment
 import com.example.fitnesstracker.ui.viewmodels.SetupViewModel
-import com.example.fitnesstracker.util.const.Constants.ACTION_SHOW_TRACKING_FRAGMENT
 import com.example.fitnesstracker.util.extensions.throttleFirstClicks
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,11 +19,23 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>() {
 
     private val viewModel: SetupViewModel by viewModels()
 
+    private lateinit var preferences: UserPreferences
+
     override fun setup(savedInstanceState: Bundle?) {
-        if (viewModel.preferencesFlow.value?.isFirstTime != false && requireActivity().intent.action != ACTION_SHOW_TRACKING_FRAGMENT)
-            findNavController().navigate(SetupFragmentDirections.actionSetupFragmentToRunFragment())
+        setupCallbacks()
         setupEditTexts()
         setupButtons()
+    }
+
+    private fun setupCallbacks() {
+        preferences = viewModel.getPreferences()
+
+        if (!preferences.isFirstTime && findNavController().currentDestination?.id == R.id.setupFragment)
+            findNavController().navigate(
+                SetupFragmentDirections.actionSetupFragmentToRunFragment(
+                    preferences.name
+                )
+            )
     }
 
     private fun setupButtons() {
@@ -77,7 +89,11 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>() {
         }
         if (isValid) {
             viewModel.saveCredentials(etName.text.toString(), etWeight.text.toString().toDouble())
-            findNavController().navigate(SetupFragmentDirections.actionSetupFragmentToRunFragment())
+            findNavController().navigate(
+                SetupFragmentDirections.actionSetupFragmentToRunFragment(
+                    etName.text.toString()
+                )
+            )
         }
     }
 

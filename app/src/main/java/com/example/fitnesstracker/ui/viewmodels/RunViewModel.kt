@@ -15,10 +15,10 @@ class RunViewModel @Inject constructor(
     private val preferences: PreferencesManager,
     private val repository: MainRepository,
 ) : ViewModel() {
-    val preferencesFlow = preferences.preferencesFlow
+    val preferencesFlow = preferences.sortOderState
 
     val runsState = preferencesFlow.flatMapLatest {
-        repository.getRuns(it.sort)
+        repository.getRuns(it)
     }
 
     fun onSortChangeClick(sortOrder: SortOrder) = viewModelScope.launch {

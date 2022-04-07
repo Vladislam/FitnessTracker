@@ -1,53 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_nav_graph"
-    app:startDestination="@id/setupFragment">
-
-    <fragment
-        android:id="@+id/runFragment"
-        android:name="com.example.fitnesstracker.ui.fragments.RunFragment"
-        android:label="@string/your_runs"
-        tools:layout="@layout/fragment_run">
-        <action
-            android:id="@+id/action_runFragment_to_trackingFragment"
-            app:destination="@id/trackingFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/settingsFragment"
-        android:name="com.example.fitnesstracker.ui.fragments.SettingsFragment"
-        android:label="@string/settings"
-        tools:layout="@layout/fragment_settings" />
-    <fragment
-        android:id="@+id/setupFragment"
-        android:name="com.example.fitnesstracker.ui.fragments.SetupFragment"
-        android:label="@string/setting_up"
-        tools:layout="@layout/fragment_setup">
-        <action
-            android:id="@+id/action_setupFragment_to_runFragment"
-            app:destination="@id/runFragment"
-            app:popUpTo="@id/setupFragment"
-            app:popUpToInclusive="true" />
-    </fragment>
-    <fragment
-        android:id="@+id/statisticsFragment"
-        android:name="com.example.fitnesstracker.ui.fragments.StatisticsFragment"
-        android:label="@string/statistics"
-        tools:layout="@layout/fragment_statistics" />
-    <fragment
-        android:id="@+id/trackingFragment"
-        android:name="com.example.fitnesstracker.ui.fragments.TrackingFragment"
-        android:label="@string/tracking_your_run"
-        tools:layout="@layout/fragment_tracking">
-        <action
-            android:id="@+id/action_trackingFragment_to_runFragment"
-            app:destination="@id/runFragment"
-            app:popUpTo="@id/trackingFragment"
-            app:popUpToInclusive="true" />
-    </fragment>
-    <action
-        android:id="@+id/action_global_trackingFragment"
-        app:destination="@id/trackingFragment"
-        app:launchSingleTop="true" />
+    app:startDestination="@id/run_navigation">
+    <include app:graph="@navigation/run_navigation" />
+    <include app:graph="@navigation/settings_navigation" />
+    <include app:graph="@navigation/statistics_navigation" />
 </navigation>

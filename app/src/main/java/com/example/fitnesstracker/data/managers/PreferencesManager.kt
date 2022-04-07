@@ -58,6 +58,9 @@ class PreferencesManager @Inject constructor(
             mapUserPreferences(it)
         }
 
+    val sortOderState = dataStore.data
+        .map { SortOrder.fromOrdinal(it[SORT_METHOD] ?: 0) }
+
     private val _errorFlow = MutableSharedFlow<Error>()
     val errorFlow = _errorFlow.asSharedFlow()
 
@@ -89,11 +92,18 @@ class PreferencesManager @Inject constructor(
         }
     }
 
+    suspend fun setupNewUser(name: String, weight: Double) {
+        dataStore.edit { preferences ->
+            preferences[NAME] = name
+            preferences[WEIGHT] = weight
+            preferences[FIRST_TIME] = false
+        }
+    }
+
     private fun mapUserPreferences(preferences: Preferences): UserPreferences {
-        val sortMethod = SortOrder.fromOrdinal(preferences[SORT_METHOD] ?: 0)
         val name = preferences[NAME] ?: context.getString(R.string.user)
-        val weight = preferences[WEIGHT] ?: 0.0
+        val weight = preferences[WEIGHT] ?: 80.0
         val isFirstTime = preferences[FIRST_TIME] ?: true
-        return UserPreferences(sortMethod, name, weight, isFirstTime)
+        return UserPreferences(name, weight, isFirstTime)
     }
 }

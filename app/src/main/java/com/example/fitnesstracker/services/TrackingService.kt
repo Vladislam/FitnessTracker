@@ -16,7 +16,7 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
 import com.example.fitnesstracker.R
 import com.example.fitnesstracker.data.models.ServiceState
-import com.example.fitnesstracker.services.callbacks.Timer
+import com.example.fitnesstracker.util.Timer
 import com.example.fitnesstracker.services.callbacks.TrackingLocationCallback
 import com.example.fitnesstracker.util.Polylines
 import com.example.fitnesstracker.util.TrackingUtility

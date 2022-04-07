@@ -14,6 +14,8 @@ import androidx.navigation.fragment.findNavController
 import com.example.fitnesstracker.R
 import com.example.fitnesstracker.data.managers.GoogleMapsManager
 import com.example.fitnesstracker.data.models.RunEntity
+import com.example.fitnesstracker.data.models.ServiceState
+import com.example.fitnesstracker.data.models.UserPreferences
 import com.example.fitnesstracker.databinding.FragmentTrackingBinding
 import com.example.fitnesstracker.services.TrackingService
 import com.example.fitnesstracker.ui.fragments.base.BaseFragment
@@ -43,7 +45,7 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
 
     private var curTimeInMillis = 0L
 
-    private var weight = 80f
+    private lateinit var preferences: UserPreferences
 
     override fun setup(savedInstanceState: Bundle?) {
         setupMapView(savedInstanceState)
@@ -53,8 +55,13 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
     }
 
     private fun setupCallbacks() {
+        preferences = viewModel.getPreferences()
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            findNavController().navigate(TrackingFragmentDirections.actionTrackingFragmentToRunFragment())
+            findNavController().navigate(
+                TrackingFragmentDirections.actionTrackingFragmentToRunFragment(
+                    preferences.name
+                )
+            )
         }
     }
 
@@ -80,7 +87,6 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
                         sendCommandToService(ACTION_PAUSE_SERVICE)
                     }
                 }
-                menu?.get(0)?.isVisible = true
             }
             btnFinish.throttleFirstClicks(lifecycleScope) {
                 mapManager.zoomToSeeTheWholeRun(binding.mapView.width, binding.mapView.height)
@@ -92,6 +98,11 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
     private fun setupObservers() {
         viewModel.uiState.observe(viewLifecycleOwner) {
             binding.state = it
+        }
+        viewModel.serviceState.observe(viewLifecycleOwner) {
+            if (it is ServiceState.Running || it is ServiceState.Paused) {
+                menu?.get(0)?.isVisible = true
+            }
         }
         TrackingService.pathPoints.observe(viewLifecycleOwner) {
             mapManager.apply {
@@ -117,7 +128,7 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
                 avgSpeedInKMH = round((distanceInMeters / 1000.0) / (curTimeInMillis / 1000.0 / 60.0 / 60.0) * 10) / 10.0,
                 distanceInMeters = distanceInMeters,
                 runDuration = curTimeInMillis,
-                caloriesBurned = ((distanceInMeters / 1000f) * weight).toInt(),
+                caloriesBurned = ((distanceInMeters / 1000f) * preferences.weight).toInt(),
             )
             viewModel.insertRun(run)
 
@@ -164,14 +175,20 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
             .setIcon(android.R.drawable.ic_menu_delete)
             .setPositiveButton(R.string.yes) { _, _ ->
                 sendCommandToService(ACTION_STOP_SERVICE)
-                findNavController().navigate(TrackingFragmentDirections.actionTrackingFragmentToRunFragment())
+                findNavController().navigate(
+                    TrackingFragmentDirections.actionTrackingFragmentToRunFragment(
+                        preferences.name
+                    )
+                )
             }
             .setNegativeButton(R.string.no, null)
             .create().show()
     }
 
-    override fun setupBinding(inflater: LayoutInflater): FragmentTrackingBinding =
-        FragmentTrackingBinding.inflate(inflater)
+    override fun setupBinding(inflater: LayoutInflater): FragmentTrackingBinding {
+        setHasOptionsMenu(true)
+        return FragmentTrackingBinding.inflate(inflater)
+    }
 
     override fun onResume() {
         super.onResume()

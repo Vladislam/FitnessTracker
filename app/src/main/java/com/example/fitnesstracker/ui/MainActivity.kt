@@ -3,16 +3,18 @@ package com.example.fitnesstracker.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
-import com.example.fitnesstracker.MainNavGraphDirections
 import com.example.fitnesstracker.R
+import com.example.fitnesstracker.RunNavigationDirections
 import com.example.fitnesstracker.databinding.ActivityMainBinding
 import com.example.fitnesstracker.ui.fragments.TrackingFragmentDirections
+import com.example.fitnesstracker.ui.viewmodels.MainViewModel
 import com.example.fitnesstracker.util.const.Constants.ACTION_SHOW_TRACKING_FRAGMENT
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,6 +23,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
+
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +50,7 @@ class MainActivity : AppCompatActivity() {
             ).build()
 
             setupActionBarWithNavController(navController, appBarConfiguration)
-            bottomNavigationView.setupWithNavController(navController)
+            NavigationUI.setupWithNavController(bottomNavigationView, navController)
 
             navController.addOnDestinationChangedListener { _, destination, _ ->
                 when (destination.id) {
@@ -60,7 +64,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun navigateToTrackingFragmentIfNeeded(intent: Intent?) {
         if (intent?.action == ACTION_SHOW_TRACKING_FRAGMENT) {
-            navController.navigate(MainNavGraphDirections.actionGlobalTrackingFragment())
+            navController.navigate(RunNavigationDirections.actionGlobalTrackingFragment())
         }
     }
 
@@ -71,7 +75,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         return if (intent?.action == ACTION_SHOW_TRACKING_FRAGMENT && navController.currentDestination?.id == R.id.trackingFragment) {
-            navController.navigate(TrackingFragmentDirections.actionTrackingFragmentToRunFragment())
+            navController.navigate(
+                TrackingFragmentDirections.actionTrackingFragmentToRunFragment(
+                    viewModel.getPreferences().name
+                )
+            )
             true
         } else {
             navController.navigateUp() || super.onSupportNavigateUp()

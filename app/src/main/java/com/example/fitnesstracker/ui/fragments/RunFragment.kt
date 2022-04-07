@@ -108,9 +108,9 @@ class RunFragment : BaseFragment<FragmentRunBinding>() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_fragment_run, menu)
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.preferencesFlow.collect { preferences ->
+            viewModel.preferencesFlow.collect { sort ->
                 menu.let {
-                    when (preferences.sort.ordinal) {
+                    when (sort.ordinal) {
                         0 -> it.findItem(R.id.action_sort_by_date).isChecked = true
                         1 -> it.findItem(R.id.action_sort_by_duration).isChecked = true
                         2 -> it.findItem(R.id.action_sort_by_distance).isChecked = true

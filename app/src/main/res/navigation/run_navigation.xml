@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/run_navigation"
+    app:startDestination="@id/setupFragment">
+
+    <action
+        android:id="@+id/action_global_trackingFragment"
+        app:destination="@id/trackingFragment"
+        app:launchSingleTop="true" />
+    <fragment
+        android:id="@+id/setupFragment"
+        android:name="com.example.fitnesstracker.ui.fragments.SetupFragment"
+        tools:layout="@layout/fragment_setup"
+        android:label="@string/setting_up">
+        <action
+            android:id="@+id/action_setupFragment_to_runFragment"
+            app:destination="@id/runFragment"
+            app:popUpTo="@id/setupFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/trackingFragment"
+        android:name="com.example.fitnesstracker.ui.fragments.TrackingFragment"
+        tools:layout="@layout/fragment_tracking"
+        android:label="@string/tracking_your_run">
+        <action
+            android:id="@+id/action_trackingFragment_to_runFragment"
+            app:destination="@id/runFragment"
+            app:popUpTo="@id/trackingFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/runFragment"
+        android:name="com.example.fitnesstracker.ui.fragments.RunFragment"
+        tools:layout="@layout/fragment_run"
+        android:label="Welcome, {name}">
+        <action
+            android:id="@+id/action_runFragment_to_trackingFragment"
+            app:destination="@id/trackingFragment" />
+        <argument
+            android:name="name"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
+</navigation>
