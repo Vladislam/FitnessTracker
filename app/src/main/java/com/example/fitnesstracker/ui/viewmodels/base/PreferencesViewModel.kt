@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
 abstract class PreferencesViewModel(
-    private val preferences: PreferencesManager,
+    protected val preferences: PreferencesManager,
 ) : ViewModel() {
 
     val preferencesState = preferences.preferencesFlow

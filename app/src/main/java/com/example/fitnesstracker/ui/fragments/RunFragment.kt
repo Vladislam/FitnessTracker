@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.activity.addCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -65,6 +66,14 @@ class RunFragment : BaseFragment<FragmentRunBinding>() {
         }
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.preferencesState.collect {
+                    (requireActivity() as AppCompatActivity).supportActionBar?.title =
+                        getString(R.string.welcome_user, it.name)
+                }
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.runsState.collect {
                     runAdapter.submitList(it)
                 }
@@ -108,7 +117,7 @@ class RunFragment : BaseFragment<FragmentRunBinding>() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_fragment_run, menu)
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.preferencesFlow.collect { sort ->
+            viewModel.sortOrderState.collect { sort ->
                 menu.let {
                     when (sort.ordinal) {
                         0 -> it.findItem(R.id.action_sort_by_date).isChecked = true

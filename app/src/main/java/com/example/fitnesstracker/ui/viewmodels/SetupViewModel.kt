@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SetupViewModel @Inject constructor(
-    private val preferences: PreferencesManager,
+    preferences: PreferencesManager,
 ) : PreferencesViewModel(preferences) {
 
     fun saveCredentials(name: String, weight: Double) = CoroutineScope(Dispatchers.IO).launch {

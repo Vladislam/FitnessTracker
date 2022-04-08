@@ -31,11 +31,7 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>() {
         preferences = viewModel.getPreferences()
 
         if (!preferences.isFirstTime && findNavController().currentDestination?.id == R.id.setupFragment)
-            findNavController().navigate(
-                SetupFragmentDirections.actionSetupFragmentToRunFragment(
-                    preferences.name
-                )
-            )
+            findNavController().navigate(SetupFragmentDirections.actionSetupFragmentToRunFragment())
     }
 
     private fun setupButtons() {
@@ -89,11 +85,7 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>() {
         }
         if (isValid) {
             viewModel.saveCredentials(etName.text.toString(), etWeight.text.toString().toDouble())
-            findNavController().navigate(
-                SetupFragmentDirections.actionSetupFragmentToRunFragment(
-                    etName.text.toString()
-                )
-            )
+            findNavController().navigate(SetupFragmentDirections.actionSetupFragmentToRunFragment())
         }
     }
 

@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import androidx.activity.addCallback
 import androidx.core.view.get
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -29,6 +28,7 @@ import com.example.fitnesstracker.util.extensions.showSnackBarWithAction
 import com.example.fitnesstracker.util.extensions.throttleFirstClicks
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 import kotlin.math.round
@@ -49,20 +49,8 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
 
     override fun setup(savedInstanceState: Bundle?) {
         setupMapView(savedInstanceState)
-        setupCallbacks()
         setupButtonsCallbacks()
         setupObservers()
-    }
-
-    private fun setupCallbacks() {
-        preferences = viewModel.getPreferences()
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
-            findNavController().navigate(
-                TrackingFragmentDirections.actionTrackingFragmentToRunFragment(
-                    preferences.name
-                )
-            )
-        }
     }
 
     private fun setupMapView(savedInstanceState: Bundle?) {
@@ -96,6 +84,11 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
     }
 
     private fun setupObservers() {
+        lifecycleScope.launch {
+            viewModel.preferencesState.collect {
+                preferences = it
+            }
+        }
         viewModel.uiState.observe(viewLifecycleOwner) {
             binding.state = it
         }
@@ -175,11 +168,7 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
             .setIcon(android.R.drawable.ic_menu_delete)
             .setPositiveButton(R.string.yes) { _, _ ->
                 sendCommandToService(ACTION_STOP_SERVICE)
-                findNavController().navigate(
-                    TrackingFragmentDirections.actionTrackingFragmentToRunFragment(
-                        preferences.name
-                    )
-                )
+                findNavController().navigate(TrackingFragmentDirections.actionTrackingFragmentToRunFragment())
             }
             .setNegativeButton(R.string.no, null)
             .create().show()
