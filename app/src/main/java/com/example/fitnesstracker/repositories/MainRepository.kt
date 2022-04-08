@@ -34,9 +34,9 @@ class MainRepository @Inject constructor(
 
     fun getTotalAverageSpeed(): LiveData<Double> = dao.getTotalAvgSpeed()
 
-    fun getTotalCaloriesBurned(): LiveData<Int> = dao.getTotalCaloriesBurned()
+    fun getTotalCaloriesBurned(): LiveData<Long> = dao.getTotalCaloriesBurned()
 
-    fun getTotalDistance(): LiveData<Int> = dao.getTotalDistance()
+    fun getTotalDistance(): LiveData<Long> = dao.getTotalDistance()
 
     fun getTotalRunningTime(): LiveData<Long> = dao.getTotalRunningTime()
 

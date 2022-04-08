@@ -70,13 +70,13 @@ class RunDao @Inject constructor(
         realm.where(RunEntity::class.java).findAllAsync().asLiveData()
             .map { it.sum(RunEntity::runDuration.name) as Long }
 
-    fun getTotalCaloriesBurned(): LiveData<Int> =
+    fun getTotalCaloriesBurned(): LiveData<Long> =
         realm.where(RunEntity::class.java).findAllAsync().asLiveData()
-            .map { it.sum(RunEntity::caloriesBurned.name) as Int }
+            .map { it.sum(RunEntity::caloriesBurned.name) as Long }
 
-    fun getTotalDistance(): LiveData<Int> =
+    fun getTotalDistance(): LiveData<Long> =
         realm.where(RunEntity::class.java).findAllAsync().asLiveData()
-            .map { it.sum(RunEntity::distanceInMeters.name) as Int }
+            .map { it.sum(RunEntity::distanceInMeters.name) as Long }
 
     fun getTotalAvgSpeed(): LiveData<Double> =
         realm.where(RunEntity::class.java).findAllAsync().asLiveData()
