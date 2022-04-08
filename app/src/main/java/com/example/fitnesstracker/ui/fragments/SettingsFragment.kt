@@ -76,7 +76,9 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
             viewModel.saveCredentials(etName.text.toString(), etWeight.text.toString().toDouble())
             showSnackBarWithAction(
                 getString(R.string.user_is_updated),
-                getString(R.string.dismiss)
+                getString(R.string.dismiss),
+                view = requireActivity().findViewById(R.id.rootView),
+                anchorView = requireActivity().findViewById(R.id.bottomNavigationView)
             ) {
                 dismiss()
             }
