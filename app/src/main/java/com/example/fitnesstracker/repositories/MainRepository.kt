@@ -17,7 +17,7 @@ class MainRepository @Inject constructor(
 
     fun deleteAllRuns() = dao.deleteAllRuns()
 
-    private fun getAllRunsSortedByDate(): Flow<RealmResults<RunEntity>> =
+    fun getAllRunsSortedByDate(): Flow<RealmResults<RunEntity>> =
         dao.getAllRunsSortedByDate()
 
     private fun getAllRunsSortedByAvgSpeed(): Flow<RealmResults<RunEntity>> =
