@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
 import com.example.fitnesstracker.R
 import com.facebook.shimmer.Shimmer
@@ -25,6 +26,8 @@ fun ImageView.loadImage(byteArray: ByteArray?, placeholder: Drawable? = null) {
 
     Glide.with(this)
         .load(byteArray)
+        .diskCacheStrategy(DiskCacheStrategy.DATA)
+        .fitCenter()
         .override(SIZE_ORIGINAL)
         .placeholder(placeholder ?: shimmerDrawable)
         .error(R.drawable.no_image_placeholder)
