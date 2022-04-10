@@ -17,6 +17,7 @@ import com.example.fitnesstracker.data.models.ServiceState
 import com.example.fitnesstracker.data.models.UserPreferences
 import com.example.fitnesstracker.databinding.FragmentTrackingBinding
 import com.example.fitnesstracker.services.TrackingService
+import com.example.fitnesstracker.ui.dialogs.CancelTrackingDialog
 import com.example.fitnesstracker.ui.fragments.base.BaseFragment
 import com.example.fitnesstracker.ui.viewmodels.TrackingViewModel
 import com.example.fitnesstracker.util.TrackingUtility
@@ -24,9 +25,9 @@ import com.example.fitnesstracker.util.TrackingUtility.getByteArrayFromBitmap
 import com.example.fitnesstracker.util.const.Constants.ACTION_PAUSE_SERVICE
 import com.example.fitnesstracker.util.const.Constants.ACTION_START_SERVICE
 import com.example.fitnesstracker.util.const.Constants.ACTION_STOP_SERVICE
+import com.example.fitnesstracker.util.const.Constants.CANCEL_TRACKING_DIALOG_TAG
 import com.example.fitnesstracker.util.extensions.showSnackBarWithAction
 import com.example.fitnesstracker.util.extensions.throttleFirstClicks
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.*
@@ -48,9 +49,16 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
     private lateinit var preferences: UserPreferences
 
     override fun setup(savedInstanceState: Bundle?) {
+        restoreDialogState(savedInstanceState)
         setupMapView(savedInstanceState)
         setupButtonsCallbacks()
         setupObservers()
+    }
+
+    private fun restoreDialogState(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null) {
+            (parentFragmentManager.findFragmentByTag(CANCEL_TRACKING_DIALOG_TAG) as CancelTrackingDialog?)?.setPositiveClickListener { cancelRun() }
+        }
     }
 
     private fun setupMapView(savedInstanceState: Bundle?) {
@@ -123,6 +131,7 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
                 runDuration = curTimeInMillis,
                 caloriesBurned = ((distanceInMeters / 1000f) * preferences.weight).toInt(),
             )
+            sendCommandToService(ACTION_STOP_SERVICE)
             viewModel.insertRun(run)
 
             showSnackBarWithAction(
@@ -132,7 +141,6 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
             ) {
                 dismiss()
             }
-            sendCommandToService(ACTION_STOP_SERVICE)
         }
     }
 
@@ -162,16 +170,14 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
     }
 
     private fun showCancelRunDialog() {
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.cancel_run_title)
-            .setMessage(R.string.cancel_run_message)
-            .setIcon(android.R.drawable.ic_menu_delete)
-            .setPositiveButton(R.string.yes) { _, _ ->
-                sendCommandToService(ACTION_STOP_SERVICE)
-                findNavController().navigate(TrackingFragmentDirections.actionTrackingFragmentToRunFragment())
-            }
-            .setNegativeButton(R.string.no, null)
-            .create().show()
+        CancelTrackingDialog {
+            cancelRun()
+        }.show(parentFragmentManager, CANCEL_TRACKING_DIALOG_TAG)
+    }
+
+    private fun cancelRun() {
+        sendCommandToService(ACTION_STOP_SERVICE)
+        findNavController().navigate(R.id.runFragment)
     }
 
     override fun setupBinding(inflater: LayoutInflater): FragmentTrackingBinding {

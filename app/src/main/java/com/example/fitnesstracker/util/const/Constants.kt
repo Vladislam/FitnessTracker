@@ -19,4 +19,6 @@ object Constants {
 
     const val LOCATION_UPDATE_INTERVAL = 5000L
     const val FASTEST_LOCATION_INTERVAL = 2000L
+
+    const val CANCEL_TRACKING_DIALOG_TAG = "CancelDialog"
 }
