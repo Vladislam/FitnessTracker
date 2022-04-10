@@ -16,9 +16,9 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
 import com.example.fitnesstracker.R
 import com.example.fitnesstracker.data.models.ServiceState
-import com.example.fitnesstracker.util.Timer
 import com.example.fitnesstracker.services.callbacks.TrackingLocationCallback
 import com.example.fitnesstracker.util.Polylines
+import com.example.fitnesstracker.util.Timer
 import com.example.fitnesstracker.util.TrackingUtility
 import com.example.fitnesstracker.util.const.Constants.ACTION_PAUSE_SERVICE
 import com.example.fitnesstracker.util.const.Constants.ACTION_START_SERVICE
@@ -56,7 +56,7 @@ class TrackingService : LifecycleService() {
     }
 
     companion object {
-        val timeRunInMillis = MutableLiveData(0L)
+        val timeRunInMillis: MutableLiveData<Long> = MutableLiveData(0L)
         var serviceState = MutableLiveData<ServiceState>(ServiceState.Stopped)
         val pathPoints = MutableLiveData<Polylines>(mutableListOf())
     }
@@ -69,19 +69,14 @@ class TrackingService : LifecycleService() {
                     if (isFirstRun) {
                         isFirstRun = false
                         startForegroundService()
-                    } else {
-                        Timber.d("Resume service")
                     }
                     timer.startTimer()
                 }
                 ACTION_PAUSE_SERVICE -> {
-                    Timber.d("Paused service")
-                    timer.isTimerEnabled = false
                     serviceState.postValue(ServiceState.Paused)
                 }
                 ACTION_STOP_SERVICE -> {
                     killService()
-                    Timber.d("Stopped service")
                 }
             }
         }
@@ -181,19 +176,18 @@ class TrackingService : LifecycleService() {
     }
 
     private fun postInitialValues() {
+        timer.timeRunInSeconds.postValue(0L)
         serviceState.postValue(ServiceState.Stopped)
         pathPoints.postValue(mutableListOf())
-        timer.timeRunInSeconds.postValue(0L)
         timeRunInMillis.postValue(0L)
     }
 
     private fun killService() {
+        timer.stopTimer()
+        postInitialValues()
         isServiceKilled = true
         isFirstRun = true
-        timer.isTimerEnabled = false
         stopForeground(true)
         stopSelf()
-        postInitialValues()
-        serviceState.postValue(ServiceState.Stopped)
     }
 }

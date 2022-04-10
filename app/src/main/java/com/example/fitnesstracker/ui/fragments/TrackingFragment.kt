@@ -131,7 +131,6 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
                 runDuration = curTimeInMillis,
                 caloriesBurned = ((distanceInMeters / 1000f) * preferences.weight).toInt(),
             )
-            sendCommandToService(ACTION_STOP_SERVICE)
             viewModel.insertRun(run)
 
             showSnackBarWithAction(
@@ -141,6 +140,7 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
             ) {
                 dismiss()
             }
+            sendCommandToService(ACTION_STOP_SERVICE)
         }
     }
 

@@ -26,12 +26,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupBottomNavigation()
+        setupNavigation()
 
         navigateToTrackingFragmentIfNeeded(intent)
     }
 
-    private fun setupBottomNavigation() {
+    private fun setupNavigation() {
         binding.apply {
             navController =
                 (supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment).navController
@@ -65,6 +65,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+            bottomNavigationView.setOnItemReselectedListener(null)
         }
     }
 
