@@ -5,38 +5,26 @@ import android.view.LayoutInflater
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.example.fitnesstracker.R
-import com.example.fitnesstracker.data.models.UserPreferences
-import com.example.fitnesstracker.databinding.FragmentSetupBinding
+import com.example.fitnesstracker.databinding.FragmentNewUserBinding
 import com.example.fitnesstracker.ui.fragments.base.BaseFragment
 import com.example.fitnesstracker.ui.viewmodels.RegisterUserViewModel
+import com.example.fitnesstracker.util.extensions.showSnackBarWithAction
 import com.example.fitnesstracker.util.extensions.throttleFirstClicks
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SetupFragment : BaseFragment<FragmentSetupBinding>() {
-
+class NewUserFragment : BaseFragment<FragmentNewUserBinding>() {
     private val viewModel: RegisterUserViewModel by viewModels()
 
-    private lateinit var preferences: UserPreferences
-
     override fun setup(savedInstanceState: Bundle?) {
-        setupCallbacks()
         setupEditTexts()
         setupButtons()
     }
 
-    private fun setupCallbacks() {
-        preferences = viewModel.getPreferences()
-
-        if (!preferences.isFirstTime && findNavController().currentDestination?.id == R.id.setupFragment)
-            findNavController().navigate(SetupFragmentDirections.actionSetupFragmentToRunFragment())
-    }
-
     private fun setupButtons() {
         binding.apply {
-            btnContinue.throttleFirstClicks(lifecycleScope) {
+            btnApplyChanges.throttleFirstClicks(lifecycleScope) {
                 validateContinueClick()
             }
         }
@@ -85,7 +73,14 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>() {
         }
         if (isValid) {
             viewModel.saveCredentials(etName.text.toString(), etWeight.text.toString().toDouble())
-            findNavController().navigate(SetupFragmentDirections.actionSetupFragmentToRunFragment())
+            showSnackBarWithAction(
+                getString(R.string.user_is_updated),
+                getString(R.string.dismiss),
+                view = requireActivity().findViewById(R.id.rootView),
+                anchorView = requireActivity().findViewById(R.id.bottomNavigationView)
+            ) {
+                dismiss()
+            }
         }
     }
 
@@ -99,6 +94,7 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>() {
         isErrorEnabled = true
     }
 
-    override fun setupBinding(inflater: LayoutInflater): FragmentSetupBinding =
-        FragmentSetupBinding.inflate(inflater)
+
+    override fun setupBinding(inflater: LayoutInflater): FragmentNewUserBinding =
+        FragmentNewUserBinding.inflate(inflater)
 }

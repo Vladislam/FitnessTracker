@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SetupViewModel @Inject constructor(
+class RegisterUserViewModel @Inject constructor(
     preferences: PreferencesManager,
 ) : PreferencesViewModel(preferences) {
 

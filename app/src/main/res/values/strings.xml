@@ -53,4 +53,5 @@
     <string name="distance_km">%.1fkm</string>
     <string name="speed_km_h">%.1fkm/h</string>
     <string name="bar_chart_label">Average Speed Over Time</string>
+    <string name="show_statistics_about">Show statistics about:</string>
 </resources>
