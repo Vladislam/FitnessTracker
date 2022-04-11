@@ -4,6 +4,7 @@ import android.graphics.Color
 import com.example.fitnesstracker.util.Polyline
 import com.example.fitnesstracker.util.TrackingUtility
 import com.example.fitnesstracker.util.const.Constants
+import com.example.fitnesstracker.util.const.Constants.MAP_ZOOM
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLngBounds
@@ -23,13 +24,24 @@ class GoogleMapsManager @Inject constructor(
         TrackingUtility.calculatePolylineLength(it).toInt()
     }
 
+    fun zoomCameraToStreetsLevel() {
+        map?.moveCamera(
+            CameraUpdateFactory.zoomTo(MAP_ZOOM)
+        )
+    }
+
     fun moveCameraToUser() {
         if (pathPoints.isNotEmpty() && pathPoints.last().isNotEmpty()) {
             map?.animateCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                    pathPoints.last().last(),
-                    Constants.MAP_ZOOM
-                )
+                CameraUpdateFactory.newLatLng(pathPoints.last().last())
+            )
+        }
+    }
+
+    fun moveAndZoomCameraToUser() {
+        if (pathPoints.isNotEmpty() && pathPoints.last().isNotEmpty()) {
+            map?.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(pathPoints.last().last(), MAP_ZOOM)
             )
         }
     }

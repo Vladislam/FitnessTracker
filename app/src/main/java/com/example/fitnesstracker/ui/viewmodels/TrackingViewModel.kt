@@ -3,6 +3,7 @@ package com.example.fitnesstracker.ui.viewmodels
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.asFlow
 import com.example.fitnesstracker.R
 import com.example.fitnesstracker.data.managers.PreferencesManager
 import com.example.fitnesstracker.data.models.RunEntity
@@ -32,6 +33,7 @@ class TrackingViewModel @Inject constructor(
         }
 
     val serviceState = TrackingService.serviceState as LiveData<ServiceState>
+
 
     fun insertRun(run: RunEntity) {
         repository.insertRun(run)

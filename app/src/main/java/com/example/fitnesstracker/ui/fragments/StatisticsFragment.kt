@@ -79,7 +79,7 @@ class StatisticsFragment : BaseFragment<FragmentStatisticsBinding>() {
                     data = BarData(barDataSet)
                     marker =
                         CustomMarkerView(
-                            result.reversed(),
+                            result,
                             requireContext(),
                             R.layout.marker_view,
                             this

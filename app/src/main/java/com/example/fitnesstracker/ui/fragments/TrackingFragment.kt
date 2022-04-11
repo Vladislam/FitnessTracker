@@ -66,7 +66,13 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
             mapView.onCreate(savedInstanceState)
             mapView.getMapAsync {
                 mapManager.map = it
-                mapManager.drawAllPolylines()
+                mapManager.map?.setOnMapLoadedCallback {
+                    if (TrackingService.serviceState.value is ServiceState.Running)
+                        mapManager.zoomCameraToStreetsLevel()
+                    else if (TrackingService.serviceState.value is ServiceState.Paused)
+                        mapManager.moveAndZoomCameraToUser()
+                    mapManager.drawAllPolylines()
+                }
             }
         }
     }
@@ -77,7 +83,7 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
                 when (state?.buttonName) {
                     getString(R.string.start) -> {
                         sendCommandToService(ACTION_START_SERVICE)
-                        mapManager.moveCameraToUser()
+                        mapManager.zoomCameraToStreetsLevel()
                     }
                     getString(R.string.pause) -> {
                         sendCommandToService(ACTION_PAUSE_SERVICE)
@@ -101,7 +107,7 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
             binding.state = it
         }
         viewModel.serviceState.observe(viewLifecycleOwner) {
-            if (it is ServiceState.Running || it is ServiceState.Paused) {
+            if (it !is ServiceState.Stopped) {
                 menu?.get(0)?.isVisible = true
             }
         }
