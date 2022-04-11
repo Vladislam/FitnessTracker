@@ -7,9 +7,11 @@ import com.example.fitnesstracker.R
 import com.example.fitnesstracker.data.managers.PreferencesManager.PreferencesKeys.FIRST_TIME
 import com.example.fitnesstracker.data.managers.PreferencesManager.PreferencesKeys.NAME
 import com.example.fitnesstracker.data.managers.PreferencesManager.PreferencesKeys.SORT_METHOD
+import com.example.fitnesstracker.data.managers.PreferencesManager.PreferencesKeys.STATISTICS_TYPE
 import com.example.fitnesstracker.data.managers.PreferencesManager.PreferencesKeys.WEIGHT
 import com.example.fitnesstracker.data.models.Error
 import com.example.fitnesstracker.data.models.SortOrder
+import com.example.fitnesstracker.data.models.StatisticsType
 import com.example.fitnesstracker.data.models.UserPreferences
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -32,6 +34,7 @@ class PreferencesManager @Inject constructor(
         private const val NAME_TAG = "name"
         private const val WEIGHT_TAG = "weight"
         private const val FIRST_TIME_TAG = "first_time"
+        private const val STATISTICS_TYPE_TAG = "statistics_type"
     }
 
     private object PreferencesKeys {
@@ -39,6 +42,7 @@ class PreferencesManager @Inject constructor(
         val NAME = stringPreferencesKey(NAME_TAG)
         val WEIGHT = doublePreferencesKey(WEIGHT_TAG)
         val FIRST_TIME = booleanPreferencesKey(FIRST_TIME_TAG)
+        val STATISTICS_TYPE = intPreferencesKey(STATISTICS_TYPE_TAG)
     }
 
     private val Context.dataStore by preferencesDataStore(PREFERENCES_NAME)
@@ -60,6 +64,9 @@ class PreferencesManager @Inject constructor(
 
     val sortOderState = dataStore.data
         .map { SortOrder.fromOrdinal(it[SORT_METHOD] ?: 0) }
+
+    val statisticsTypeState = dataStore.data
+        .map { StatisticsType.fromOrdinal(it[STATISTICS_TYPE] ?: 0) }
 
     private val _errorFlow = MutableSharedFlow<Error>()
     val errorFlow = _errorFlow.asSharedFlow()
@@ -89,6 +96,16 @@ class PreferencesManager @Inject constructor(
     suspend fun updateIsFirstFirstTime(isFirst: Boolean) {
         dataStore.edit { preferences ->
             preferences[FIRST_TIME] = isFirst
+        }
+    }
+
+    suspend fun updateStatisticsType(statisticsType: Int) {
+        if (statisticsType !in 0..StatisticsType.values().size) {
+            _errorFlow.emit(Error(context.getString(R.string.error_statistic_type_doesnt_exist)))
+            return
+        }
+        dataStore.edit { preferences ->
+            preferences[STATISTICS_TYPE] = statisticsType
         }
     }
 

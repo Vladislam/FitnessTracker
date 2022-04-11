@@ -8,14 +8,22 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.fitnesstracker.ui.fragments.SettingsFragment"
-        tools:layout="@layout/fragment_settings"
-        android:label="@string/settings" >
+        android:label="@string/settings"
+        tools:layout="@layout/fragment_settings">
         <action
             android:id="@+id/action_settingsFragment_to_setupStatisticsFragment"
-            app:destination="@id/setupStatisticsFragment" />
+            app:destination="@id/setupStatisticsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_settingsFragment_to_newUserFragment"
-            app:destination="@id/newUserFragment" />
+            app:destination="@id/newUserFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/newUserFragment"

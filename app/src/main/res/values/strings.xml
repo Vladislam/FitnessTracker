@@ -32,6 +32,7 @@
     <string name="sort_by_calories_burned">Sort by calories burned</string>
     <string name="user">User</string>
     <string name="error_sort_doesnt_exist">Error! This kind of sorting does not exist</string>
+    <string name="error_statistic_type_doesnt_exist">Error! This statistics type does not exist</string>
     <string name="error_field_must_not_be_empty">This field must not be empty</string>
     <string name="error_name_must_be_appropriate">The name must be appropriate</string>
     <string name="finish_run">Finish Run</string>
