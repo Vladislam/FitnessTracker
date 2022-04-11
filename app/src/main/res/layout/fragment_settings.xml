@@ -6,6 +6,45 @@
     android:orientation="vertical"
     tools:context=".ui.fragments.SettingsFragment">
 
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/btnChangeStatistics"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="4dp">
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvChangeStatistics"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:paddingStart="8dp"
+            android:paddingTop="20dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="20dp"
+            android:text="@string/change_chart_value_type" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/btnUpdateUser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:elevation="4dp">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvUpdateUser"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:paddingStart="8dp"
+            android:paddingTop="20dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="20dp"
+            android:text="@string/update_the_user_info" />
+
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.appcompat.widget.LinearLayoutCompat>
