@@ -55,5 +55,7 @@
     <string name="bar_chart_label">Average Speed Over Time</string>
     <string name="show_statistics_about">Show statistics about:</string>
     <string name="change_chart_value_type">Change the chart value type</string>
-    <string name="update_the_user_info">Update the user info</string>
+    <string name="update_the_user_info">Update user information</string>
+    <string name="update_user">Update User</string>
+    <string name="setting_up_statistics">Setting up Statistics</string>
 </resources>

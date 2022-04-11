@@ -9,5 +9,22 @@
         android:id="@+id/settingsFragment"
         android:name="com.example.fitnesstracker.ui.fragments.SettingsFragment"
         tools:layout="@layout/fragment_settings"
-        android:label="@string/settings" />
+        android:label="@string/settings" >
+        <action
+            android:id="@+id/action_settingsFragment_to_setupStatisticsFragment"
+            app:destination="@id/setupStatisticsFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_newUserFragment"
+            app:destination="@id/newUserFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newUserFragment"
+        android:name="com.example.fitnesstracker.ui.fragments.NewUserFragment"
+        android:label="@string/update_user"
+        tools:layout="@layout/fragment_new_user" />
+    <fragment
+        android:id="@+id/setupStatisticsFragment"
+        android:name="com.example.fitnesstracker.ui.fragments.SetupStatisticsFragment"
+        android:label="@string/setting_up_statistics"
+        tools:layout="@layout/fragment_setup_statistics" />
 </navigation>

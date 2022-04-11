@@ -11,9 +11,9 @@
         style="@style/TextAppearance.AppCompat.Headline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="6dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="8dp"
         android:text="@string/show_statistics_about"
         android:textSize="18sp" />
 
@@ -27,6 +27,7 @@
             android:id="@+id/rbSpeed"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/border"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:text="@string/speed" />
@@ -35,6 +36,7 @@
             android:id="@+id/rbDuration"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/border"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:text="@string/duration" />
@@ -43,6 +45,7 @@
             android:id="@+id/rbDistance"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/border"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:text="@string/distance" />
@@ -51,6 +54,7 @@
             android:id="@+id/rbCalories"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@drawable/border"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:text="@string/calories" />
