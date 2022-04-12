@@ -6,17 +6,20 @@ import android.view.LayoutInflater
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.fitnesstracker.R
+import com.example.fitnesstracker.data.models.StatisticsType
 import com.example.fitnesstracker.databinding.FragmentStatisticsBinding
 import com.example.fitnesstracker.ui.custom.view.CustomMarkerView
 import com.example.fitnesstracker.ui.fragments.base.BaseFragment
 import com.example.fitnesstracker.ui.viewmodels.StatisticsViewModel
 import com.example.fitnesstracker.util.TrackingUtility
+import com.example.fitnesstracker.util.wrappers.CustomValueFormatter
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 @AndroidEntryPoint
 class StatisticsFragment : BaseFragment<FragmentStatisticsBinding>() {
@@ -29,6 +32,7 @@ class StatisticsFragment : BaseFragment<FragmentStatisticsBinding>() {
     }
 
     private fun setupBarChart() {
+        val valueFormatter = CustomValueFormatter(viewModel.getStatisticsType())
         binding.barChart.apply {
             xAxis.apply {
                 position = XAxis.XAxisPosition.BOTTOM
@@ -36,7 +40,9 @@ class StatisticsFragment : BaseFragment<FragmentStatisticsBinding>() {
                 setDrawGridLines(false)
                 textSize = 14f
             }
-            description.text = getString(R.string.bar_chart_label)
+            axisRight.valueFormatter = valueFormatter
+            axisLeft.valueFormatter = valueFormatter
+            description.text = getBarChartLabel()
             legend.isEnabled = false
         }
     }
@@ -56,15 +62,13 @@ class StatisticsFragment : BaseFragment<FragmentStatisticsBinding>() {
             binding.tvTotalTime.text = TrackingUtility.getFormattedStopWatchTime(it)
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.runsByDate.collect { result ->
-                val allAvgSpeeds =
-                    result.indices.map { index ->
-                        result[index]?.avgSpeedInKMH?.toFloat()?.let { yAxis ->
-                            BarEntry(index.toFloat(), yAxis)
-                        } ?: return@collect
+            viewModel.runsStatState.collect { (values, runs) ->
+                val allValues =
+                    values.indices.map { index ->
+                        BarEntry(index.toFloat(), values[index].toFloat())
                     }
                 val barDataSet =
-                    BarDataSet(allAvgSpeeds, getString(R.string.bar_chart_label)).apply {
+                    BarDataSet(allValues, getBarChartLabel()).apply {
                         TypedValue().also {
                             requireContext().theme.resolveAttribute(
                                 com.google.android.material.R.attr.colorSecondary,
@@ -73,13 +77,14 @@ class StatisticsFragment : BaseFragment<FragmentStatisticsBinding>() {
                             )
                             color = it.data
                         }
-                        valueTextSize = 14f
+                        valueFormatter = CustomValueFormatter(viewModel.getStatisticsType())
+                        valueTextSize = 10f
                     }
                 binding.barChart.apply {
                     data = BarData(barDataSet)
                     marker =
                         CustomMarkerView(
-                            result,
+                            runs,
                             requireContext(),
                             R.layout.marker_view,
                             this
@@ -88,6 +93,18 @@ class StatisticsFragment : BaseFragment<FragmentStatisticsBinding>() {
                 }
             }
         }
+    }
+
+    private fun getBarChartLabel(): String = runBlocking {
+        getString(
+            R.string.bar_chart_label,
+            when (viewModel.getStatisticsType()) {
+                StatisticsType.SPEED -> getString(R.string.speed)
+                StatisticsType.DURATION -> getString(R.string.duration)
+                StatisticsType.DISTANCE -> getString(R.string.distance)
+                StatisticsType.CALORIES -> getString(R.string.calories)
+            }
+        )
     }
 
     override fun setupBinding(inflater: LayoutInflater): FragmentStatisticsBinding =

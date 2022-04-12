@@ -21,7 +21,7 @@ import com.example.fitnesstracker.databinding.FragmentRunBinding
 import com.example.fitnesstracker.ui.adapters.RunAdapter
 import com.example.fitnesstracker.ui.fragments.base.BaseFragment
 import com.example.fitnesstracker.ui.viewmodels.RunViewModel
-import com.example.fitnesstracker.util.RequestPermissionContract
+import com.example.fitnesstracker.util.wrappers.RequestPermissionContract
 import com.example.fitnesstracker.util.TrackingUtility
 import com.example.fitnesstracker.util.const.Constants.REQUEST_CODE_LOCATION_PERMISSION
 import com.example.fitnesstracker.util.extensions.throttleFirst

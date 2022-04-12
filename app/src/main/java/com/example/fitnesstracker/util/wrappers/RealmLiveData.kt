@@ -1,4 +1,4 @@
-package com.example.fitnesstracker.util
+package com.example.fitnesstracker.util.wrappers
 
 import androidx.lifecycle.LiveData
 import io.realm.RealmChangeListener

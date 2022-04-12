@@ -1,4 +1,4 @@
-package com.example.fitnesstracker.util;
+package com.example.fitnesstracker.util.wrappers;
 
 import android.content.Context;
 import android.content.pm.PackageManager;

@@ -61,6 +61,15 @@ object TrackingUtility {
         }
     }
 
+    fun getFormattedBarLabelTime(ms: Long): String {
+        var milliseconds = ms
+        val hours = TimeUnit.MILLISECONDS.toHours(milliseconds)
+        milliseconds -= TimeUnit.HOURS.toMillis(hours)
+        val minutes = TimeUnit.MILLISECONDS.toMinutes(milliseconds)
+        milliseconds -= TimeUnit.MINUTES.toMillis(minutes)
+        return String.format("%02d:%02d", hours, minutes)
+    }
+
     fun getByteArrayFromBitmap(bitmap: Bitmap?): ByteArray {
         ByteArrayOutputStream().also {
             bitmap?.compress(Bitmap.CompressFormat.PNG, 100, it)
