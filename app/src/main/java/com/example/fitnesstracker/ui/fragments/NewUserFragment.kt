@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.example.fitnesstracker.R
 import com.example.fitnesstracker.databinding.FragmentNewUserBinding
 import com.example.fitnesstracker.ui.fragments.base.BaseFragment
@@ -74,12 +73,9 @@ class NewUserFragment : BaseFragment<FragmentNewUserBinding>() {
         }
         if (isValid) {
             viewModel.saveCredentials(etName.text.toString(), etWeight.text.toString().toDouble())
-            findNavController().popBackStack()
             showSnackBarWithAction(
                 getString(R.string.user_is_updated),
                 getString(R.string.dismiss),
-                view = requireActivity().findViewById(R.id.rootView),
-                anchorView = requireActivity().findViewById(R.id.bottomNavigationView)
             ) {
                 dismiss()
             }
