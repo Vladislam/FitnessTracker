@@ -80,7 +80,7 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
     private fun setupButtonsCallbacks() {
         binding.apply {
             btnToggleRun.throttleFirstClicks(lifecycleScope) {
-                when (state?.buttonName) {
+                when (state?.buttonName?.asString(requireContext())) {
                     getString(R.string.start) -> {
                         sendCommandToService(ACTION_START_SERVICE)
                         mapManager.zoomCameraToStreetsLevel()

@@ -58,9 +58,9 @@
                     android:paddingTop="8dp"
                     android:paddingEnd="22dp"
                     android:paddingBottom="8dp"
-                    android:text="@{state.buttonName}"
                     android:textColor="?attr/colorOnPrimary"
                     android:textSize="20sp"
+                    app:setText="@{state.buttonName}"
                     tools:text="@string/start" />
 
             </com.google.android.material.card.MaterialCardView>
