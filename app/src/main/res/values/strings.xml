@@ -59,4 +59,11 @@
     <string name="update_the_user_info">Update user information</string>
     <string name="update_user">Update User</string>
     <string name="setting_up_statistics">Setting up Statistics</string>
+    <string name="error_gps_unavailable">Location settings are inadequate, and cannot be fixed here. Fix in Settings.</string>
+    <string name="error_gps_disabled">Gps is disabled. Please, enable it and try again!</string>
+    <string name="rationale_title">Gps is required for this application.</string>
+    <string name="rationale_message">
+        This app may not work correctly without the Gps.
+        Open the app settings screen to enable it.
+    </string>
 </resources>

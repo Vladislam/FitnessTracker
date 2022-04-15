@@ -1,11 +1,16 @@
 package com.example.fitnesstracker.ui.fragments
 
+import android.app.Activity
 import android.content.Intent
+import android.content.IntentFilter
+import android.location.LocationManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.get
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -20,8 +25,10 @@ import com.example.fitnesstracker.services.TrackingService
 import com.example.fitnesstracker.ui.dialogs.CancelTrackingDialog
 import com.example.fitnesstracker.ui.fragments.base.BaseFragment
 import com.example.fitnesstracker.ui.viewmodels.TrackingViewModel
+import com.example.fitnesstracker.data.managers.GpsManager
 import com.example.fitnesstracker.util.TrackingUtility
 import com.example.fitnesstracker.util.TrackingUtility.getByteArrayFromBitmap
+import com.example.fitnesstracker.util.broadcast_receivers.GpsLocationReceiver
 import com.example.fitnesstracker.util.const.Constants.ACTION_PAUSE_SERVICE
 import com.example.fitnesstracker.util.const.Constants.ACTION_START_SERVICE
 import com.example.fitnesstracker.util.const.Constants.ACTION_STOP_SERVICE
@@ -34,25 +41,66 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.math.round
 
+
 @AndroidEntryPoint
 class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
+
+    private val resolutionForResult =
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { activityResult ->
+            when (activityResult.resultCode) {
+                Activity.RESULT_OK -> {
+                    isGpsEnabled = true
+                }
+                Activity.RESULT_CANCELED -> {
+                    showRationaleDialog(
+                        getString(R.string.rationale_title),
+                        getString(R.string.rationale_message)
+                    )
+                }
+            }
+        }
+
+    private val gpsUtil by lazy {
+        GpsManager(resolutionForResult, requireContext()) {
+            isGpsEnabled = it
+        }
+    }
 
     private val viewModel: TrackingViewModel by viewModels()
 
     @Inject
     lateinit var mapManager: GoogleMapsManager
 
+    @Inject
+    lateinit var gpsReceiver: GpsLocationReceiver
+
     private var menu: Menu? = null
 
     private var curTimeInMillis = 0L
 
+    private var isGpsEnabled = false
+
     private lateinit var preferences: UserPreferences
 
     override fun setup(savedInstanceState: Bundle?) {
+        checkForGps()
         restoreDialogState(savedInstanceState)
         setupMapView(savedInstanceState)
         setupButtonsCallbacks()
         setupObservers()
+    }
+
+    private fun checkForGps() {
+        gpsUtil.turnOnGPS()
+        gpsReceiver.apply {
+            registerCallback {
+                gpsUtil.turnOnGPS()
+            }
+            register(
+                requireContext(),
+                IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION)
+            )
+        }
     }
 
     private fun restoreDialogState(savedInstanceState: Bundle?) {
@@ -82,8 +130,15 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
             btnToggleRun.throttleFirstClicks(lifecycleScope) {
                 when (state?.buttonName?.asString(requireContext())) {
                     getString(R.string.start) -> {
-                        sendCommandToService(ACTION_START_SERVICE)
-                        mapManager.zoomCameraToStreetsLevel()
+                        if (isGpsEnabled) {
+                            sendCommandToService(ACTION_START_SERVICE)
+                            mapManager.zoomCameraToStreetsLevel()
+                        } else {
+                            showSnackBarWithAction(
+                                getString(R.string.error_gps_disabled),
+                                getString(R.string.dismiss)
+                            ) { dismiss() }
+                        }
                     }
                     getString(R.string.pause) -> {
                         sendCommandToService(ACTION_PAUSE_SERVICE)
@@ -186,9 +241,24 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
         findNavController().navigate(R.id.runFragment)
     }
 
+    private fun showRationaleDialog(title: String, message: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(title)
+            .setMessage(message)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                startActivity(Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }.create().show()
+    }
+
     override fun setupBinding(inflater: LayoutInflater): FragmentTrackingBinding {
         setHasOptionsMenu(true)
         return FragmentTrackingBinding.inflate(inflater)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        gpsReceiver.unregister(requireContext())
     }
 
     override fun onResume() {
