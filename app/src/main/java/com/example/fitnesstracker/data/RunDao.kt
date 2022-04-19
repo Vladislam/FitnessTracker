@@ -1,14 +1,9 @@
 package com.example.fitnesstracker.data
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.map
 import com.example.fitnesstracker.data.models.RunEntity
-import com.example.fitnesstracker.util.extensions.asLiveData
 import io.realm.Realm
 import io.realm.RealmResults
 import io.realm.Sort
-import io.realm.kotlin.toFlow
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class RunDao @Inject constructor(
@@ -36,49 +31,40 @@ class RunDao @Inject constructor(
         }
     }
 
-    fun getAllRunsSortedByDate(): Flow<RealmResults<RunEntity>> =
+    fun getAllRunsSortedByDate(): RealmResults<RunEntity> =
         realm.where(RunEntity::class.java)
             .findAllAsync()
             .sort(RunEntity::timestamp.name, Sort.DESCENDING)
-            .toFlow()
 
-    fun getAllRunsSortedByDuration(): Flow<RealmResults<RunEntity>> =
+    fun getAllRunsSortedByDuration(): RealmResults<RunEntity> =
         realm.where(RunEntity::class.java)
             .findAllAsync()
             .sort(RunEntity::runDuration.name, Sort.DESCENDING)
-            .toFlow()
 
-    fun getAllRunsSortedByCaloriesBurned(): Flow<RealmResults<RunEntity>> =
+    fun getAllRunsSortedByCaloriesBurned(): RealmResults<RunEntity> =
         realm.where(RunEntity::class.java)
             .findAllAsync()
             .sort(RunEntity::caloriesBurned.name, Sort.DESCENDING)
-            .toFlow()
 
-    fun getAllRunsSortedByAvgSpeed(): Flow<RealmResults<RunEntity>> =
+    fun getAllRunsSortedByAvgSpeed(): RealmResults<RunEntity> =
         realm.where(RunEntity::class.java)
             .findAllAsync()
             .sort(RunEntity::avgSpeedInKMH.name, Sort.DESCENDING)
-            .toFlow()
 
-    fun getAllRunsSortedByDistance(): Flow<RealmResults<RunEntity>> =
+    fun getAllRunsSortedByDistance(): RealmResults<RunEntity> =
         realm.where(RunEntity::class.java)
             .findAllAsync()
             .sort(RunEntity::distanceInMeters.name, Sort.DESCENDING)
-            .toFlow()
 
-    fun getTotalRunningTime(): LiveData<Long> =
-        realm.where(RunEntity::class.java).findAllAsync().asLiveData()
-            .map { it.sum(RunEntity::runDuration.name) as Long }
+    fun getTotalRunningTime(): RealmResults<RunEntity> =
+        realm.where(RunEntity::class.java).findAllAsync()
 
-    fun getTotalCaloriesBurned(): LiveData<Long> =
-        realm.where(RunEntity::class.java).findAllAsync().asLiveData()
-            .map { it.sum(RunEntity::caloriesBurned.name) as Long }
+    fun getTotalCaloriesBurned(): RealmResults<RunEntity> =
+        realm.where(RunEntity::class.java).findAllAsync()
 
-    fun getTotalDistance(): LiveData<Long> =
-        realm.where(RunEntity::class.java).findAllAsync().asLiveData()
-            .map { it.sum(RunEntity::distanceInMeters.name) as Long }
+    fun getTotalDistance(): RealmResults<RunEntity> =
+        realm.where(RunEntity::class.java).findAllAsync()
 
-    fun getTotalAvgSpeed(): LiveData<Double> =
-        realm.where(RunEntity::class.java).findAllAsync().asLiveData()
-            .map { it.average(RunEntity::avgSpeedInKMH.name) }
+    fun getTotalAvgSpeed(): RealmResults<RunEntity> =
+        realm.where(RunEntity::class.java).findAllAsync()
 }
