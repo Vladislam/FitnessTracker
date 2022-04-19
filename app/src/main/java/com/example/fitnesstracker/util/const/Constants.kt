@@ -1,6 +1,7 @@
 package com.example.fitnesstracker.util.const
 
 object Constants {
+    const val DEFAULT_WEIGHT: Double = 80.0
     const val REQUEST_CODE_LOCATION_PERMISSION = 1
 
     const val ACTION_START_SERVICE = "ACTION_START_SERVICE"

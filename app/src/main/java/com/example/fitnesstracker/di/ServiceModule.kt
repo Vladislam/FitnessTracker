@@ -35,7 +35,7 @@ object ServiceModule {
         NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID)
             .setAutoCancel(false)
             .setOngoing(true)
-            .setSmallIcon(R.drawable.ic_directions_run_black_24dp)
+            .setSmallIcon(R.drawable.ic_run)
             .setContentTitle(context.getString(R.string.fitness_tracker))
             .setContentText(context.getString(R.string.zeros))
             .setContentIntent(pendingIntent)

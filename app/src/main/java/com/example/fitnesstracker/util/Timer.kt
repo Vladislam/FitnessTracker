@@ -15,7 +15,6 @@ class Timer {
     val timeRunInSeconds = MutableLiveData(0L)
 
     fun startTimer() {
-        addEmptyPolyline()
         timeStarted = System.currentTimeMillis()
 
         job = CoroutineScope(Dispatchers.Main).launch {
@@ -35,9 +34,4 @@ class Timer {
     }
 
     fun stopTimer() = job?.cancel()
-
-    private fun addEmptyPolyline() = TrackingService.pathPoints.value?.apply {
-        add(mutableListOf())
-        TrackingService.pathPoints.postValue(this)
-    } ?: TrackingService.pathPoints.postValue(mutableListOf(mutableListOf()))
 }

@@ -47,6 +47,33 @@
                 tools:text="@string/zeros_with_millis" />
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/btnFinish"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="?attr/colorPrimary"
+                android:elevation="4dp"
+                android:visibility="@{state.isPaused ? View.VISIBLE : View.GONE }"
+                app:cardCornerRadius="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnToggleRun"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvTimer">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="22dp"
+                    android:paddingTop="8dp"
+                    android:paddingEnd="22dp"
+                    android:paddingBottom="8dp"
+                    android:text="@string/finish_run"
+                    android:textColor="?attr/colorOnPrimary"
+                    android:textSize="20sp" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/btnToggleRun"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -54,9 +81,8 @@
                 android:elevation="4dp"
                 app:cardCornerRadius="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/btnFinish"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btnFinish"
                 app:layout_constraintTop_toBottomOf="@+id/tvTimer">
 
                 <TextView
@@ -70,33 +96,6 @@
                     android:textSize="20sp"
                     app:setText="@{state.buttonName}"
                     tools:text="@string/start" />
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/btnFinish"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="?attr/colorPrimary"
-                android:elevation="4dp"
-                android:visibility="@{state.isPaused ? View.VISIBLE : View.GONE }"
-                app:cardCornerRadius="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@id/btnToggleRun"
-                app:layout_constraintTop_toBottomOf="@+id/tvTimer">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="22dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="22dp"
-                    android:paddingBottom="8dp"
-                    android:text="@string/finish_run"
-                    android:textColor="?attr/colorOnPrimary"
-                    android:textSize="20sp" />
 
             </com.google.android.material.card.MaterialCardView>
 

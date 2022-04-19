@@ -13,6 +13,7 @@ import com.example.fitnesstracker.data.models.Error
 import com.example.fitnesstracker.data.models.SortOrder
 import com.example.fitnesstracker.data.models.StatisticsType
 import com.example.fitnesstracker.data.models.UserPreferences
+import com.example.fitnesstracker.util.const.Constants
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -119,7 +120,7 @@ class PreferencesManager @Inject constructor(
 
     private fun mapUserPreferences(preferences: Preferences): UserPreferences {
         val name = preferences[NAME] ?: context.getString(R.string.user)
-        val weight = preferences[WEIGHT] ?: 80.0
+        val weight = preferences[WEIGHT] ?: Constants.DEFAULT_WEIGHT
         val isFirstTime = preferences[FIRST_TIME] ?: true
         return UserPreferences(name, weight, isFirstTime)
     }

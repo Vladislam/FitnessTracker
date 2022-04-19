@@ -17,7 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.fitnesstracker.R
 import com.example.fitnesstracker.data.managers.GoogleMapsManager
-import com.example.fitnesstracker.data.models.RunEntity
+import com.example.fitnesstracker.data.managers.GpsManager
 import com.example.fitnesstracker.data.models.ServiceState
 import com.example.fitnesstracker.data.models.UserPreferences
 import com.example.fitnesstracker.databinding.FragmentTrackingBinding
@@ -25,9 +25,7 @@ import com.example.fitnesstracker.services.TrackingService
 import com.example.fitnesstracker.ui.dialogs.CancelTrackingDialog
 import com.example.fitnesstracker.ui.fragments.base.BaseFragment
 import com.example.fitnesstracker.ui.viewmodels.TrackingViewModel
-import com.example.fitnesstracker.data.managers.GpsManager
 import com.example.fitnesstracker.util.TrackingUtility
-import com.example.fitnesstracker.util.TrackingUtility.getByteArrayFromBitmap
 import com.example.fitnesstracker.util.broadcast_receivers.GpsLocationReceiver
 import com.example.fitnesstracker.util.const.Constants.ACTION_PAUSE_SERVICE
 import com.example.fitnesstracker.util.const.Constants.ACTION_START_SERVICE
@@ -36,10 +34,7 @@ import com.example.fitnesstracker.util.const.Constants.CANCEL_TRACKING_DIALOG_TA
 import com.example.fitnesstracker.util.extensions.showSnackBarWithAction
 import com.example.fitnesstracker.util.extensions.throttleFirstClicks
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
-import kotlin.math.round
 
 
 @AndroidEntryPoint
@@ -129,7 +124,7 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
         binding.apply {
             btnToggleRun.throttleFirstClicks(lifecycleScope) {
                 when (state?.buttonName?.asString(requireContext())) {
-                    getString(R.string.start) -> {
+                    getString(R.string.start), getString(R.string.resume) -> {
                         if (isGpsEnabled) {
                             sendCommandToService(ACTION_START_SERVICE)
                             mapManager.zoomCameraToStreetsLevel()
@@ -153,11 +148,6 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
     }
 
     private fun setupObservers() {
-        lifecycleScope.launch {
-            viewModel.preferencesState.collect {
-                preferences = it
-            }
-        }
         viewModel.uiState.observe(viewLifecycleOwner) {
             binding.state = it
         }
@@ -182,17 +172,7 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
 
     private fun endRunAndSave() {
         mapManager.map?.snapshot { bitmap ->
-            val distanceInMeters = mapManager.distanceInMeters()
-
-            val run = RunEntity(
-                image = getByteArrayFromBitmap(bitmap),
-                timestamp = Calendar.getInstance().timeInMillis,
-                avgSpeedInKMH = round((distanceInMeters / 1000.0) / (curTimeInMillis / 1000.0 / 60.0 / 60.0) * 10) / 10.0,
-                distanceInMeters = distanceInMeters,
-                runDuration = curTimeInMillis,
-                caloriesBurned = ((distanceInMeters / 1000f) * preferences.weight).toInt(),
-            )
-            viewModel.insertRun(run)
+            viewModel.saveRun(mapManager.distanceInMeters(), bitmap, curTimeInMillis)
 
             showSnackBarWithAction(
                 title = getString(R.string.run_was_saved),

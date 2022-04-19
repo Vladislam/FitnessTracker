@@ -70,6 +70,7 @@ class TrackingService : LifecycleService() {
                         isFirstRun = false
                         startForegroundService()
                     }
+                    addEmptyPolyline()
                     timer.startTimer()
                 }
                 ACTION_PAUSE_SERVICE -> {
@@ -107,10 +108,7 @@ class TrackingService : LifecycleService() {
             getService(this, 2, resumeIntent, FLAG_UPDATE_CURRENT or FLAG_IMMUTABLE)
         }
 
-        curNotificationBuilder.javaClass.getDeclaredField("mActions").apply {
-            isAccessible = true
-            set(curNotificationBuilder, ArrayList<NotificationCompat.Action>())
-        }
+        curNotificationBuilder.clearActions()
         if (!isServiceKilled) {
             curNotificationBuilder = notificationBuilder
                 .addAction(R.drawable.ic_pause, notificationActionText, pendingIntent)
@@ -181,6 +179,11 @@ class TrackingService : LifecycleService() {
         pathPoints.postValue(mutableListOf())
         timeRunInMillis.postValue(0L)
     }
+
+    private fun addEmptyPolyline() = pathPoints.value?.apply {
+        add(mutableListOf())
+        pathPoints.postValue(this)
+    } ?: pathPoints.postValue(mutableListOf(mutableListOf()))
 
     private fun killService() {
         timer.stopTimer()
