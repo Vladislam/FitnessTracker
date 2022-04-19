@@ -17,7 +17,11 @@ class SettingsFragment : BaseFragment<FragmentSettingsBinding>() {
     private fun setupButtons() {
         binding.apply {
             btnUpdateUser.setOnClickListener {
-                findNavController().navigate(SettingsFragmentDirections.actionSettingsFragmentToNewUserFragment())
+                findNavController().navigate(
+                    SettingsFragmentDirections.actionSettingsFragmentToNewUserFragment(
+                        true
+                    )
+                )
             }
             btnChangeStatistics.setOnClickListener {
                 findNavController().navigate(SettingsFragmentDirections.actionSettingsFragmentToSetupStatisticsFragment())

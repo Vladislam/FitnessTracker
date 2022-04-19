@@ -5,26 +5,43 @@ import android.view.LayoutInflater
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.fitnesstracker.R
+import com.example.fitnesstracker.data.models.UserPreferences
 import com.example.fitnesstracker.databinding.FragmentNewUserBinding
 import com.example.fitnesstracker.ui.fragments.base.BaseFragment
 import com.example.fitnesstracker.ui.viewmodels.RegisterUserViewModel
-import com.example.fitnesstracker.util.extensions.showSnackBarWithAction
+import com.example.fitnesstracker.util.extensions.dismissError
 import com.example.fitnesstracker.util.extensions.throttleFirstClicks
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NewUserFragment : BaseFragment<FragmentNewUserBinding>() {
+
     private val viewModel: RegisterUserViewModel by viewModels()
 
+    private val args: NewUserFragmentArgs by navArgs()
+
+    private lateinit var preferences: UserPreferences
+
     override fun setup(savedInstanceState: Bundle?) {
+        setupCallbacks()
         setupEditTexts()
         setupButtons()
     }
 
+    private fun setupCallbacks() {
+        preferences = viewModel.getPreferences()
+
+        if (!preferences.isFirstTime && findNavController().currentDestination?.id == R.id.setupFragment)
+            findNavController().navigate(NewUserFragmentDirections.actionSetupFragmentToRunFragment())
+    }
+
     private fun setupButtons() {
         binding.apply {
-            btnApplyChanges.throttleFirstClicks(lifecycleScope) {
+            isRegistered = args.isRegistered
+            btnContinue.throttleFirstClicks(lifecycleScope) {
                 validateContinueClick()
             }
         }
@@ -36,11 +53,9 @@ class NewUserFragment : BaseFragment<FragmentNewUserBinding>() {
                 onTextChanged = { s, _, _, _ ->
                     s?.let {
                         if (it.length <= 1) {
-                            setNameFiledError(getString(R.string.error_name_must_be_appropriate))
-                            tilName.isErrorEnabled = true
+                            binding.tilName.error = getString(R.string.error_name_must_be_longer)
                         } else {
-                            tilName.error = null
-                            tilName.isErrorEnabled = false
+                            tilName.dismissError()
                         }
                     }
                 })
@@ -49,10 +64,9 @@ class NewUserFragment : BaseFragment<FragmentNewUserBinding>() {
                 onTextChanged = { s, _, _, _ ->
                     s?.let {
                         if (it.isEmpty()) {
-                            setWeightFiledError(getString(R.string.error_field_must_not_be_empty))
+                            binding.tilWeight.error = getString(R.string.error_required_field)
                         } else {
-                            tilWeight.error = null
-                            tilWeight.isErrorEnabled = false
+                            tilWeight.dismissError()
                         }
                     }
                 })
@@ -63,35 +77,19 @@ class NewUserFragment : BaseFragment<FragmentNewUserBinding>() {
         var isValid = true
         etName.text?.let {
             if (it.length <= 1) {
-                setNameFiledError(getString(R.string.error_name_must_be_appropriate))
+                binding.tilName.error = getString(R.string.error_name_must_be_longer)
                 isValid = false
             }
         }
         if (etWeight.text?.isEmpty() == true) {
-            setWeightFiledError(getString(R.string.error_field_must_not_be_empty))
+            binding.tilWeight.error = getString(R.string.error_required_field)
             isValid = false
         }
         if (isValid) {
             viewModel.saveCredentials(etName.text.toString(), etWeight.text.toString().toDouble())
-            showSnackBarWithAction(
-                getString(R.string.user_is_updated),
-                getString(R.string.dismiss),
-            ) {
-                dismiss()
-            }
+            findNavController().navigate(NewUserFragmentDirections.actionSetupFragmentToRunFragment())
         }
     }
-
-    private fun setNameFiledError(cause: String) = binding.tilName.apply {
-        error = cause
-        isErrorEnabled = true
-    }
-
-    private fun setWeightFiledError(cause: String) = binding.tilWeight.apply {
-        error = cause
-        isErrorEnabled = true
-    }
-
 
     override fun setupBinding(inflater: LayoutInflater): FragmentNewUserBinding =
         FragmentNewUserBinding.inflate(inflater)

@@ -29,7 +29,11 @@
         android:id="@+id/newUserFragment"
         android:name="com.example.fitnesstracker.ui.fragments.NewUserFragment"
         android:label="@string/update_user"
-        tools:layout="@layout/fragment_new_user" />
+        tools:layout="@layout/fragment_new_user" >
+        <argument android:name="isRegistered"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
     <fragment
         android:id="@+id/setupStatisticsFragment"
         android:name="com.example.fitnesstracker.ui.fragments.SetupStatisticsFragment"

@@ -11,9 +11,13 @@
         app:launchSingleTop="true" />
     <fragment
         android:id="@+id/setupFragment"
-        android:name="com.example.fitnesstracker.ui.fragments.SetupFragment"
+        android:name="com.example.fitnesstracker.ui.fragments.NewUserFragment"
         android:label="@string/setting_up"
-        tools:layout="@layout/fragment_setup">
+        tools:layout="@layout/fragment_new_user">
+        <argument
+            android:name="isRegistered"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_setupFragment_to_runFragment"
             app:destination="@id/runFragment"
