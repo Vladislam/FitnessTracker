@@ -39,7 +39,6 @@
     <string name="fitness_tracker">Fitness Tracker</string>
     <string name="zeros">00:00:00</string>
     <string name="zeros_with_millis">00:00:00:00</string>
-    <string name="finish">Finish</string>
     <string name="pause">Pause</string>
     <string name="resume">Resume</string>
     <string name="cancel_run">Cancel Run</string>
@@ -50,7 +49,6 @@
     <string name="run_was_saved">Run was successfully saved</string>
     <string name="dismiss">Dismiss</string>
     <string name="welcome_user">Welcome, %s</string>
-    <string name="user_is_updated">User is successfully updated!</string>
     <string name="distance_km">%.1fkm</string>
     <string name="speed_km_h">%.1fkm/h</string>
     <string name="bar_chart_label">Average %s Over Time</string>

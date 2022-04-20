@@ -6,8 +6,3 @@ fun TextInputLayout.dismissError() {
     error = null
     isErrorEnabled = false
 }
-
-fun TextInputLayout.setError() {
-    error = null
-    isErrorEnabled = false
-}

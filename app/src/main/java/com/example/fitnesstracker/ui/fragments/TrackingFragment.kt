@@ -19,7 +19,6 @@ import com.example.fitnesstracker.R
 import com.example.fitnesstracker.data.managers.GoogleMapsManager
 import com.example.fitnesstracker.data.managers.GpsManager
 import com.example.fitnesstracker.data.models.ServiceState
-import com.example.fitnesstracker.data.models.UserPreferences
 import com.example.fitnesstracker.databinding.FragmentTrackingBinding
 import com.example.fitnesstracker.services.TrackingService
 import com.example.fitnesstracker.ui.dialogs.CancelTrackingDialog
@@ -74,8 +73,6 @@ class TrackingFragment : BaseFragment<FragmentTrackingBinding>() {
     private var curTimeInMillis = 0L
 
     private var isGpsEnabled = false
-
-    private lateinit var preferences: UserPreferences
 
     override fun setup(savedInstanceState: Bundle?) {
         checkForGps()

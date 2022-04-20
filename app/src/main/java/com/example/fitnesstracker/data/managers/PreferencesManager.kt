@@ -9,14 +9,11 @@ import com.example.fitnesstracker.data.managers.PreferencesManager.PreferencesKe
 import com.example.fitnesstracker.data.managers.PreferencesManager.PreferencesKeys.SORT_METHOD
 import com.example.fitnesstracker.data.managers.PreferencesManager.PreferencesKeys.STATISTICS_TYPE
 import com.example.fitnesstracker.data.managers.PreferencesManager.PreferencesKeys.WEIGHT
-import com.example.fitnesstracker.data.models.Error
 import com.example.fitnesstracker.data.models.SortOrder
 import com.example.fitnesstracker.data.models.StatisticsType
 import com.example.fitnesstracker.data.models.UserPreferences
 import com.example.fitnesstracker.util.const.Constants
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
@@ -69,14 +66,7 @@ class PreferencesManager @Inject constructor(
     val statisticsTypeState = dataStore.data
         .map { StatisticsType.fromOrdinal(it[STATISTICS_TYPE] ?: 0) }
 
-    private val _errorFlow = MutableSharedFlow<Error>()
-    val errorFlow = _errorFlow.asSharedFlow()
-
     suspend fun updateSortMethod(sortMethod: Int) {
-        if (sortMethod !in 0..SortOrder.values().size) {
-            _errorFlow.emit(Error(context.getString(R.string.error_sort_doesnt_exist)))
-            return
-        }
         dataStore.edit { preferences ->
             preferences[SORT_METHOD] = sortMethod
         }
@@ -101,10 +91,6 @@ class PreferencesManager @Inject constructor(
     }
 
     suspend fun updateStatisticsType(statisticsType: Int) {
-        if (statisticsType !in 0..StatisticsType.values().size) {
-            _errorFlow.emit(Error(context.getString(R.string.error_statistic_type_doesnt_exist)))
-            return
-        }
         dataStore.edit { preferences ->
             preferences[STATISTICS_TYPE] = statisticsType
         }
