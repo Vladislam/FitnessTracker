@@ -64,4 +64,6 @@
         This app may not work correctly without the Gps.
         Open the app settings screen to enable it.
     </string>
+    <string name="title_location_permission_required">Location Permission Required</string>
+    <string name="message_location_permission_required">The app may not work correctly without the location permission. Move to the app settings and allow to use location permission \"Always\".</string>
 </resources>

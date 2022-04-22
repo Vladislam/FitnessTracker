@@ -1,8 +1,10 @@
 package com.example.fitnesstracker.ui.fragments
 
 import android.Manifest
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -21,15 +23,15 @@ import com.example.fitnesstracker.databinding.FragmentRunBinding
 import com.example.fitnesstracker.ui.adapters.RunAdapter
 import com.example.fitnesstracker.ui.fragments.base.BaseFragment
 import com.example.fitnesstracker.ui.viewmodels.RunViewModel
-import com.example.fitnesstracker.util.wrappers.RequestPermissionContract
 import com.example.fitnesstracker.util.TrackingUtility
 import com.example.fitnesstracker.util.const.Constants.REQUEST_CODE_LOCATION_PERMISSION
 import com.example.fitnesstracker.util.extensions.throttleFirst
+import com.example.fitnesstracker.util.wrappers.RequestPermissionContract
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import pub.devrel.easypermissions.AppSettingsDialog
 import ru.ldralighieri.corbind.view.clicks
 
 @AndroidEntryPoint
@@ -41,7 +43,7 @@ class RunFragment : BaseFragment<FragmentRunBinding>() {
         RequestPermissionContract(this) { requestCode, permissionResult ->
             if (requestCode == REQUEST_CODE_LOCATION_PERMISSION) {
                 if (permissionResult == RequestPermissionContract.PermissionResult.DENIED || permissionResult == RequestPermissionContract.PermissionResult.PERMANENTLY_DENIED) {
-                    AppSettingsDialog.Builder(this).build().show()
+                    showDialogToDirectToNavigationSettings()
                 }
             }
         }
@@ -65,7 +67,7 @@ class RunFragment : BaseFragment<FragmentRunBinding>() {
             requireActivity().finish()
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.preferencesState.collect {
                     (requireActivity() as AppCompatActivity).supportActionBar?.title =
                         getString(R.string.welcome_user, it.name)
@@ -73,7 +75,7 @@ class RunFragment : BaseFragment<FragmentRunBinding>() {
             }
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.runsState.collect {
                     runAdapter.submitList(it)
                 }
@@ -112,6 +114,17 @@ class RunFragment : BaseFragment<FragmentRunBinding>() {
                 Manifest.permission.ACCESS_BACKGROUND_LOCATION,
             )
         }
+    }
+
+    private fun showDialogToDirectToNavigationSettings() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(R.string.title_location_permission_required)
+            .setMessage(R.string.message_location_permission_required)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

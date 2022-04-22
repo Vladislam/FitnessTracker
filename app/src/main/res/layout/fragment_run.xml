@@ -23,7 +23,7 @@
         android:layout_marginBottom="32dp"
         android:contentDescription="@string/add_new_run"
         android:src="@drawable/ic_add_black"
-        app:backgroundTint="@color/colorAccent"
+        app:backgroundTint="?attr/colorAccent"
         app:fabSize="normal"
         app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
         app:rippleColor="@android:color/white" />
